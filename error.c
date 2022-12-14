@@ -35,104 +35,90 @@
 extern const char *bootstrap_strerror(kern_return_t r);
 
 int error_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple) {
-    int retval = 117;
-    
-    const char *extraMessagesTable[] = {
-        "kernel out-of-line resource shortage",
-        "kernel ipc resource shortage",
-        "unknown",
-        "vm address space shortage",
-        "unknown",
-        "unknown",
-        "unknown",
-        "ipc namespace shortage",
-    };
-    
-    if (argc < 2) {
-        return retval;
-    }
-    
-    const char *arg = argv[1];
-    unsigned long code = 0;
-    int type = 0;
-    
-    if (strcmp(arg, "mach") == 0) {
-        if (argc < 3) {
-            return retval;
-        }
-        
-        code = strtoul(argv[2], NULL, 0);
-        type = 1;
-    }
-    else if (strcmp(arg, "bootstrap") == 0) {
-        if (argc < 3) {
-            return retval;
-        }
-        
-        code = strtoul(argv[2], NULL, 0);
-        type = 2;
-    }
-    else if (strcmp(arg, "posix") == 0) {
-        if (argc < 3) {
-            return retval;
-        }
-        
-        code = strtoul(argv[2], NULL, 0);
-        type = 3;
-    }
-    else {
-        code = strtoul(arg, NULL, 0);
-        if (code < 161) {
-            type = 3;
-        }
-        else {
-            const char *other = "0x";
-            if (strncmp(arg, other, strlen(other)) == 0) {
-                type = 1;
-            }
-            else {
-                type = 2;
-            }
-        }
-    }
-    
-    if (type == 1) {
-        unsigned long extraCode = code & 0x3E00;
-        char *str = mach_error_string((mach_error_t)(code & 0xFFFFC1FF));
-        
-        fprintf(stdout, "0x%lx: %s\n", code, str);
-        fprintf(stdout, "system = 0x%x\n", (unsigned int)err_get_system(code));
-        fprintf(stdout, "subsystem = 0x%x\n", (unsigned int)err_get_sub(code));
-        fprintf(stdout, "code = 0x%x\n", (unsigned int)(code & 0x1FF));
-        
-        if (extraCode != 0) {
-            unsigned long extraCodeIndex = (extraCode - 1024) >> 10;
-            const char *extraStr = NULL;
-            if (extraCodeIndex <= 7) {
-                extraStr = extraMessagesTable[extraCodeIndex];
-            }
-            else {
-                extraStr = "unknown";
-            }
-            
-            fprintf(stdout, "extra = 0x%x: %s\n", (unsigned int)extraCode, extraStr);
-        }
-        
-        retval = 0;
-    }
-    else if (type == 2) {
-        const char *str = bootstrap_strerror((kern_return_t)code);
-        fprintf(stdout, "%u: %s\n", (unsigned int)code, str);
-        retval = 0;
-    }
-    else if (type == 3) {
-        const char *str = xpc_strerror((int)code);
-        fprintf(stdout, "%u: %s\n", (unsigned int)code, str);
-        retval = 0;
-    }
-    else {
-        retval = 0;
-    }
-    
-    return retval;
+	int retval = EUSAGE;
+
+	const char *extraMessagesTable[] = {
+		"kernel out-of-line resource shortage",
+		"kernel ipc resource shortage",
+		"unknown",
+		"vm address space shortage",
+		"unknown",
+		"unknown",
+		"unknown",
+		"ipc namespace shortage",
+	};
+
+	if (argc < 2)
+		return retval;
+
+	const char *arg = argv[1];
+	unsigned long code = 0;
+	int type = 0;
+
+	if (strcmp(arg, "mach") == 0) {
+		if (argc < 3)
+			return retval;
+
+		code = strtoul(argv[2], NULL, 0);
+		type = 1;
+	} else if (strcmp(arg, "bootstrap") == 0) {
+		if (argc < 3)
+			return retval;
+
+		code = strtoul(argv[2], NULL, 0);
+		type = 2;
+	} else if (strcmp(arg, "posix") == 0) {
+		if (argc < 3)
+			return retval;
+
+		code = strtoul(argv[2], NULL, 0);
+		type = 3;
+	} else {
+		code = strtoul(arg, NULL, 0);
+		if (code < 161)
+			type = 3;
+		else {
+			const char *other = "0x";
+			if (strncmp(arg, other, strlen(other)) == 0) {
+				type = 1;
+			} else {
+				type = 2;
+			}
+		}
+	}
+
+	if (type == 1) {
+		unsigned long extraCode = code & 0x3E00;
+		char *str = mach_error_string((mach_error_t)(code & 0xFFFFC1FF));
+
+		fprintf(stdout, "0x%lx: %s\n", code, str);
+		fprintf(stdout, "system = 0x%x\n", (unsigned int)err_get_system(code));
+		fprintf(stdout, "subsystem = 0x%x\n", (unsigned int)err_get_sub(code));
+		fprintf(stdout, "code = 0x%x\n", (unsigned int)(code & 0x1FF));
+
+		if (extraCode != 0) {
+			unsigned long extraCodeIndex = (extraCode - 1024) >> 10;
+			const char *extraStr = NULL;
+			if (extraCodeIndex <= 7)
+				extraStr = extraMessagesTable[extraCodeIndex];
+			else
+				extraStr = "unknown";
+
+			fprintf(stdout, "extra = 0x%x: %s\n", (unsigned int)extraCode, extraStr);
+		}
+
+		retval = 0;
+	} else if (type == 2) {
+		const char *str = bootstrap_strerror((kern_return_t)code);
+		fprintf(stdout, "%u: %s\n", (unsigned int)code, str);
+		retval = 0;
+	} else if (type == 3) {
+		const char *str = xpc_strerror((int)code);
+		fprintf(stdout, "%u: %s\n", (unsigned int)code, str);
+		retval = 0;
+	} else {
+		retval = 0;
+	}
+
+	return retval;
 }
