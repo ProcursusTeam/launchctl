@@ -41,7 +41,7 @@ launchctl_send_xpc_to_launchd(uint64_t routine, xpc_object_t msg, xpc_object_t *
 	xpc_dictionary_set_uint64(msg, "subsystem", 3);
 	xpc_dictionary_set_uint64(msg, "routine", routine);
 #if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_16_0
-	int ret = xpc_pipe_interface_routine(bootstrap_pipe, 0, msg, reply, 0);
+	int ret = _xpc_pipe_interface_routine(bootstrap_pipe, 0, msg, reply, 0);
 #else
 	int ret = xpc_pipe_routine(bootstrap_pipe, msg, reply);
 #endif
