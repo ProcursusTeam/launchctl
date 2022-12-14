@@ -58,7 +58,7 @@ cmd_main reboot_cmd;
 cmd_main bootstrap_cmd;
 cmd_main bootout_cmd;
 
-// error.h
+// error.c
 cmd_main error_cmd;
 
 void launchctl_xpc_object_print(xpc_object_t, const char *name, int level);
