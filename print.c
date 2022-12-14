@@ -46,8 +46,8 @@ print_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 	xpc_object_t dict = xpc_dictionary_create(NULL, NULL, 0);
 	*msg = dict;
 
-	if (launchctl_setup_xpc_dict_for_service_name(argv[1], dict, &name) != 0)
-		return EUSAGE;
+	if ((ret = launchctl_setup_xpc_dict_for_service_name(argv[1], dict, &name)) != 0)
+		return ret;
 
 	xpc_dictionary_set_fd(dict, "fd", STDOUT_FILENO);
 	if (name != NULL)

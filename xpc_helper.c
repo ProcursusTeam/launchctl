@@ -117,9 +117,9 @@ launchctl_setup_xpc_dict_for_service_name(char *servicetarget, xpc_object_t dict
 			break;
 		split[i] = var;
 	}
-	if (split[0] == NULL)
-		return EUSAGE;
-	if (strcmp(split[0], "system") == 0) {
+	if (split[0] == NULL || split[0][0] == '\0')
+		return EBADNAME;
+	else if (strcmp(split[0], "system") == 0) {
 		xpc_dictionary_set_uint64(dict, "type", 1);
 		xpc_dictionary_set_uint64(dict, "handle", 0);
 		if (split[1] != NULL && split[1][0] != '\0') {

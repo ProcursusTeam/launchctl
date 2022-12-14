@@ -52,7 +52,7 @@ static const struct {
 	{ "bootout", "Tears down a domain or removes a service from a domain.", "<domain-target> [service-path1, service-path2, ...] | <service-target>", bootout_cmd },
 	{ "enable", "Enables an existing service.", "<service-target>", enable_cmd },
 	{ "disable", "Disables an existing service.", "<service-target>", enable_cmd },
-	{ "print", "Prints a description of a domain or service.", "<target>", print_cmd },
+	{ "print", "Prints a description of a domain or service.", "<domain-target> | <service-target>", print_cmd },
 	{ "reboot", "Initiates a system reboot of the specified type.", "[system|halt|obliterate|userspace] [-s]", reboot_cmd },
 	{ "load", "Bootstraps a service or directory of services.", "<service-path, service-path2, ...>", load_cmd },
 	{ "unload", "Unloads a service or directory of services.", "<service-path, service-path2, ...>", load_cmd },
