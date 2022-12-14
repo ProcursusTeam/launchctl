@@ -62,6 +62,7 @@ static const struct {
 	{ "setenv", "Sets the specified environment variables for all services within the domain.", "<<key> <value>, ...>", setenv_cmd },
 	{ "unsetenv", "Unsets the specified environment variables for all services within the domain.", "<key, ...>", setenv_cmd },
 	{ "getenv", "Gets the value of an environment variable from within launchd.", "<key>", getenv_cmd },
+	{ "error", "Prints a description of an error.", "[posix|mach|bootstrap] <code>", error_cmd },
 	{ "variant", "Prints the launchd variant.", NULL, version_cmd },
 	{ "version", "Prints the launchd version.", NULL, version_cmd },
 	{ "help", "Prints the usage for a given subcommand.", "<subcommand>", help_cmd }

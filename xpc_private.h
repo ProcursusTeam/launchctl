@@ -49,6 +49,7 @@ enum {
 typedef xpc_object_t xpc_pipe_t;
 
 int xpc_pipe_routine(xpc_pipe_t pipe, xpc_object_t message, xpc_object_t XPC_GIVES_REFERENCE *reply);
+int _xpc_pipe_interface_routine(xpc_pipe_t pipe, uint64_t routine, xpc_object_t message, xpc_object_t XPC_GIVES_REFERENCE *reply, uint64_t flags);
 
 const char *xpc_strerror(int);
 

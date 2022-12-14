@@ -1,5 +1,8 @@
-launchctl
-*.o
-compile_commands.json
+.DS_Store
+
 .cache
+*.o
 *.dylib
+launchctl
+
+compile_commands.json

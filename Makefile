@@ -1,7 +1,7 @@
 PREFIX  ?= 
 DESTIDR ?=
 
-SRC := launchctl.c xpc_helper.c start_stop.c print.c env.c load.c enable.c reboot.c bootstrap.c
+SRC := launchctl.c xpc_helper.c start_stop.c print.c env.c load.c enable.c reboot.c bootstrap.c error.c
 
 all: launchctl
 
