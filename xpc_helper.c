@@ -36,6 +36,8 @@
 
 #include "os_alloc_once.h"
 
+#include "launchctl.h"
+
 int
 launchctl_send_xpc_to_launchd(uint64_t routine, xpc_object_t msg, xpc_object_t *reply)
 {
@@ -104,7 +106,7 @@ launchctl_xpc_object_print(xpc_object_t in, const char *name, int level)
 void
 launchctl_setup_xpc_dict(xpc_object_t dict)
 {
-	if (floor(kCFCoreFoundationVersionNumber) >= 1800) {
+	if (__isPlatformVersionAtLeast(2, 15, 0, 0)) {
 		xpc_dictionary_set_uint64(dict, "type", 7);
 	} else {
 		xpc_dictionary_set_uint64(dict, "type", 1);
