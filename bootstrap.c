@@ -109,6 +109,10 @@ bootout_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 		paths = launchctl_parse_load_unload(0, argc - 2, argv + 2);
 		xpc_dictionary_set_value(dict, "paths", paths);
 	}
+
+	if (__isPlatformVersionAtLeast(2, 15, 0, 0))
+		xpc_dictionary_set_bool(dict, "no-einprogress", true);
+
 	ret = launchctl_send_xpc_to_launchd(XPC_ROUTINE_UNLOAD, dict, &reply);
 	if (ret != ENODOMAIN) {
 		if (ret == 0) {

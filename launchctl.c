@@ -175,8 +175,14 @@ version_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 	xpc_object_t dict = xpc_dictionary_create(NULL, NULL, 0);
 	*msg = dict;
 	launchctl_setup_xpc_dict(dict);
+	vm_address_t addr = 0;
+	vm_size_t sz = 0x100000;
 
-	xpc_dictionary_set_fd(dict, "fd", STDOUT_FILENO);
+	if (__isPlatformVersionAtLeast(2, 15, 0, 0)) {
+		addr = launchctl_create_shmem(dict, sz);
+	} else {
+		xpc_dictionary_set_fd(dict, "fd", STDOUT_FILENO);
+	}
 
 	if (strcmp(argv[0], "variant") == 0)
 		xpc_dictionary_set_bool(dict, "variant", 1);
@@ -190,6 +196,12 @@ version_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 	} else if (ret != 0) {
 		fprintf(stderr, "Could not print variant: %d: %s\n", ret, xpc_strerror(ret));
 	}
+
+	if (__isPlatformVersionAtLeast(2, 15, 0, 0))
+		launchctl_print_shmem(reply, addr, sz, stdout);
+
+	if (addr != 0)
+		vm_deallocate(mach_task_self(), addr, sz);
 
 	return ret;
 }

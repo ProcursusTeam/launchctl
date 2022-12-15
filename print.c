@@ -42,6 +42,8 @@ print_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 	int ret = EUSAGE;
 	xpc_object_t reply;
 	const char *name = NULL;
+	vm_address_t addr;
+	vm_size_t sz = 0x100000;
 
 	xpc_object_t dict = xpc_dictionary_create(NULL, NULL, 0);
 	*msg = dict;
@@ -49,13 +51,22 @@ print_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 	if ((ret = launchctl_setup_xpc_dict_for_service_name(argv[1], dict, &name)) != 0)
 		return ret;
 
-	xpc_dictionary_set_fd(dict, "fd", STDOUT_FILENO);
+	if (__isPlatformVersionAtLeast(2, 15, 0, 0)) {
+		addr = launchctl_create_shmem(dict, sz);
+	} else {
+		xpc_dictionary_set_fd(dict, "fd", STDOUT_FILENO);
+	}
 	if (name != NULL)
 		ret = launchctl_send_xpc_to_launchd(XPC_ROUTINE_PRINT_SERVICE, dict, &reply);
 	else
 		ret = launchctl_send_xpc_to_launchd(XPC_ROUTINE_PRINT, dict, &reply);
 
-	if (ret > ENODOMAIN) {
+	if (ret == 0) {
+		if (__isPlatformVersionAtLeast(2, 15, 0, 0)) {
+			launchctl_print_shmem(reply, addr, sz, stdout);
+			vm_deallocate(mach_task_self(), addr, sz);
+		}
+	} else if (ret < ENODOMAIN) {
 		if (ret == EINVAL)
 			fprintf(stderr, "Bad request.\n");
 		else

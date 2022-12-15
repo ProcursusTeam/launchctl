@@ -186,3 +186,34 @@ launchctl_parse_load_unload(unsigned int domain, int count, char **list)
 
 	return ret;
 }
+
+vm_address_t
+launchctl_create_shmem(xpc_object_t dict, vm_size_t sz)
+{
+	vm_address_t addr = 0;
+	kern_return_t err;
+	xpc_object_t shmem;
+
+	err = vm_allocate(mach_task_self(), &addr, sz, 0xf0000003);
+	shmem = xpc_shmem_create((void*)addr, sz);
+	xpc_dictionary_set_value(dict, "shmem", shmem);
+
+	return addr;
+}
+
+void
+launchctl_print_shmem(xpc_object_t dict, vm_address_t addr, vm_size_t sz, FILE *outfd)
+{
+	uint64_t written;
+
+	written = xpc_dictionary_get_uint64(dict, "bytes-written");
+	if (written <= sz) {
+		if (written == 0) {
+			fwrite("<eof>", 5, 1, outfd);
+		} else {
+			fwrite((void*)addr, 1, written, outfd);
+		}
+		fflush(outfd);
+		return;
+	}
+}
