@@ -4,5 +4,6 @@
 *.o
 *.dylib
 launchctl
+a.out
 
 compile_commands.json

@@ -69,16 +69,19 @@ bootstrap_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **appl
 					if (xpc_get_type(value) == XPC_TYPE_INT64) {
 						int64_t err = xpc_int64_get_value(value);
 						if (err == EEXIST || err == EALREADY)
-							fprintf(stderr, "%s: service already loaded\n", key);
+							fprintf(stderr, "%s: service already bootstrapped\n", key);
 						else
 							fprintf(stderr, "%s: %s\n", key, xpc_strerror(err));
 					}
 					return true;
 			});
-			if (xpc_dictionary_get_count(errors) != 0)
-				return EMANY;
-			else
+			int64_t err;
+			if ((err = xpc_dictionary_get_int64(reply, "bootstrap-error")) == 0)
 				return 0;
+			else {
+				fprintf(stderr, "Bootstrap failed: %lld: %s\n", err, strerror(err));
+				return err;
+			}
 		}
 		fprintf(stderr, "Bootstrap failed: %d: %s\n", ret, xpc_strerror(ret));
 	}
@@ -117,16 +120,19 @@ bootout_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 					if (xpc_get_type(value) == XPC_TYPE_INT64) {
 						int64_t err = xpc_int64_get_value(value);
 						if (err == EEXIST || err == EALREADY)
-							fprintf(stderr, "%s: service already loaded\n", key);
+							fprintf(stderr, "%s: service already booted out\n", key);
 						else
 							fprintf(stderr, "%s: %s\n", key, xpc_strerror(err));
 					}
 					return true;
 			});
-			if (xpc_dictionary_get_count(errors) != 0)
-				return EMANY;
-			else
+			int64_t err;
+			if ((err = xpc_dictionary_get_int64(reply, "bootstrap-error")) == 0)
 				return 0;
+			else {
+				fprintf(stderr, "Bootstrap failed: %lld: %s\n", err, strerror(err));
+				return err;
+			}
 		}
 		fprintf(stderr, "Boot-out failed: %d: %s\n", ret, xpc_strerror(ret));
 	}

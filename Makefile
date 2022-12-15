@@ -1,12 +1,13 @@
 PREFIX  ?= 
 DESTIDR ?=
 
-SRC := launchctl.c xpc_helper.c start_stop.c print.c env.c load.c enable.c reboot.c bootstrap.c error.c
+SRC    := launchctl.c xpc_helper.c start_stop.c print.c env.c load.c enable.c reboot.c bootstrap.c error.c
+LDLIBS := -framework CoreFoundation
 
 all: launchctl
 
 launchctl: $(SRC:%.c=%.o)
-	$(CC) $(LDFLAGS) $^ -o $@
+	$(CC) $(LDFLAGS) $^ $(LOADLIBES) $(LDLIBS) -o $@
 	ldid -Slaunchctl.xml -Cadhoc launchctl
 
 clean:

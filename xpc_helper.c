@@ -25,8 +25,11 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include <math.h>
 #include <stdint.h>
 #include <sysdir.h>
+
+#include <CoreFoundation/CoreFoundation.h>
 
 #include <xpc/xpc.h>
 #include "xpc_private.h"
@@ -40,7 +43,7 @@ launchctl_send_xpc_to_launchd(uint64_t routine, xpc_object_t msg, xpc_object_t *
 
 	xpc_dictionary_set_uint64(msg, "subsystem", routine >> 8);
 	xpc_dictionary_set_uint64(msg, "routine", routine);
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 160000
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 150000
 	int ret = _xpc_pipe_interface_routine(bootstrap_pipe, 0, msg, reply, 0);
 #else
 	int ret = xpc_pipe_routine(bootstrap_pipe, msg, reply);
@@ -101,7 +104,11 @@ launchctl_xpc_object_print(xpc_object_t in, const char *name, int level)
 void
 launchctl_setup_xpc_dict(xpc_object_t dict)
 {
-	xpc_dictionary_set_uint64(dict, "type", 1);
+	if (floor(kCFCoreFoundationVersionNumber) >= 1800) {
+		xpc_dictionary_set_uint64(dict, "type", 7);
+	} else {
+		xpc_dictionary_set_uint64(dict, "type", 1);
+	}
 	xpc_dictionary_set_uint64(dict, "handle", 0);
 	return;
 }

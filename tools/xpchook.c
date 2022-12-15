@@ -72,21 +72,21 @@ hook_xpc_pipe_routine_with_flags(xpc_pipe_t pipe, xpc_object_t request,
 	char *replystr = xpc_copy_description(*reply);
 	fprintf(stderr, "\033[31mREPLY: %s\033[m\n", replystr);
 	free(replystr);
-	fprintf(stderr, "\033[32mFLAGS: %i\033[m\n", flags);
+	fprintf(stderr, "\033[32mFLAGS: %llu\033[m\n", flags);
 	return ret;
 }
 
 DYLD_INTERPOSE(hook_xpc_pipe_routine_with_flags, xpc_pipe_routine_with_flags);
 #endif
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 160000 || __MAC_OS_X_VERSION_MIN_REQUIRED >= 130000
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 150000 || __MAC_OS_X_VERSION_MIN_REQUIRED >= 120000
 int _xpc_pipe_interface_routine(xpc_pipe_t pipe, uint64_t routine, xpc_object_t msg, xpc_object_t XPC_GIVES_REFERENCE *reply, uint64_t flags);
 
 int
 hook_xpc_pipe_interface_routine(xpc_pipe_t pipe, uint64_t routine, xpc_object_t msg, xpc_object_t XPC_GIVES_REFERENCE *reply, uint64_t flags)
 {
-	int ret = _xpc_pipe_interface_routine(pipe, request, msg, reply, flags);
-	fprintf(stderr, "\033[32mREQUEST: %llu\033[m\n", request);
+	int ret = _xpc_pipe_interface_routine(pipe, routine, msg, reply, flags);
+	fprintf(stderr, "\033[32mROUTINE: %llu\033[m\n", routine);
 	char *requeststr= xpc_copy_description(msg);
 	fprintf(stderr, "\033[32mMSG: %s\033[m\n", requeststr);
 	free(requeststr);
