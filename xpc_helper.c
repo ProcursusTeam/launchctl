@@ -43,6 +43,10 @@ launchctl_send_xpc_to_launchd(uint64_t routine, xpc_object_t msg, xpc_object_t *
 {
 	xpc_object_t bootstrap_pipe = ((struct xpc_global_data *)_os_alloc_once_table[OS_ALLOC_ONCE_KEY_LIBXPC].ptr)->xpc_bootstrap_pipe;
 
+	// Routines that act on a specific service are in the subsystem 2
+	// but that require a domain are in the subsystem 3 these are also
+	// divided into the routine numbers 0x2XX and 0x3XX, so a quick and
+	// dirty bit shift will let us get the correct subsystem.
 	xpc_dictionary_set_uint64(msg, "subsystem", routine >> 8);
 	xpc_dictionary_set_uint64(msg, "routine", routine);
 #if __IPHONE_OS_VERSION_MIN_REQUIRED >= 150000

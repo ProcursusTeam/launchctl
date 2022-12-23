@@ -91,10 +91,14 @@ load_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 	launchctl_setup_xpc_dict(dict);
 	xpc_object_t array = launchctl_parse_load_unload(domain, argc, argv);
 	xpc_dictionary_set_value(dict, "paths", array);
-	if (load)
+	if (load) {
 		xpc_dictionary_set_bool(dict, "enable", wflag);
-	else
+	} else {
 		xpc_dictionary_set_bool(dict, "disable", wflag);
+		if (__isPlatformVersionAtLeast(2, 15, 0, 0)) {
+			xpc_dictionary_set_bool(dict, "no-einprogress", true);
+		}
+	}
 	xpc_dictionary_set_bool(dict, "legacy-load", true);
 	if (force)
 		xpc_dictionary_set_bool(dict, "force", true);

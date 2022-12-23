@@ -283,6 +283,9 @@ launchctl_print_domain_str(FILE *s, xpc_object_t msg)
 		case 5:
 			fprintf(s, "pid: %"PRIu64, handle);
 			break;
+		case 7:
+			fprintf(s, "ports");
+			break;
 		case 8:
 			fprintf(s, "user gui: %"PRIu64, handle);
 			break;
