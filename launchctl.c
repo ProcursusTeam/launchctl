@@ -56,6 +56,7 @@ static const struct {
 	{ "print-cache", "Prints information about the service cache.", NULL, print_cache_cmd },
 	{ "print-disabled", "Prints which services are disabled.", NULL, print_disabled_cmd },
 	{ "examine", "Runs the specified analysis tool against launchd in a non-reentrant manner.", "[<tool> [arg0, arg1, ... , @PID, ...]]", examine_cmd },
+	{ "config", "Modifies persistent configuration parameters for launchd domains.", NULL, config_cmd },
 	{ "dumpstate", "Dumps launchd state to stdout.", NULL, dumpstate_cmd },
 	{ "reboot", "Initiates a system reboot of the specified type.", "[system|halt|obliterate|userspace] [-s]", reboot_cmd },
 	{ "load", "Bootstraps a service or directory of services.", "<service-path, service-path2, ...>", load_cmd },
@@ -306,4 +307,10 @@ examine_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 	// But the chance of people using a DEVELOPMENT launchd is very low.
 	fprintf(stderr, "Examination is only available on the DEVELOPMENT variant\n");
 	return ENOTDEVELOPMENT;
+}
+
+int
+config_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
+{
+	return ENOTSUP;
 }

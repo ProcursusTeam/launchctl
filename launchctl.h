@@ -34,6 +34,7 @@ cmd_main list_cmd;
 cmd_main version_cmd;
 cmd_main help_cmd;
 cmd_main examine_cmd;
+cmd_main config_cmd;
 
 // start_stop.c
 cmd_main stop_cmd;

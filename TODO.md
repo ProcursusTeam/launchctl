@@ -17,7 +17,7 @@
 1. [ ] limit
 1. [ ] runstats
 1. [x] examine
-1. [ ] config
+1. [x] config
 1. [x] dumpstate
 1. [x] reboot
 1. [ ] userswitch

@@ -184,7 +184,7 @@ dumpstate_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **appl
 		}
 	} else if (ret == EBUSY) {
 		fprintf(stderr, "State-dump already in progress; please try again later.\n");
-	} else if (ret == EOPNOTSUPP) {
+	} else if (ret == ENOTSUP) {
 		fprintf(stderr, "State-dump is not available in this configuration.\n");
 	} else if (ret == ENOTDEVELOPMENT) {
 		fprintf(stderr, "State-dump is only available on the DEVELOPMENT variant.\n");
