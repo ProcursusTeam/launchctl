@@ -53,6 +53,8 @@ static const struct {
 	{ "enable", "Enables an existing service.", "<service-target>", enable_cmd },
 	{ "disable", "Disables an existing service.", "<service-target>", enable_cmd },
 	{ "print", "Prints a description of a domain or service.", "<domain-target> | <service-target>", print_cmd },
+	{ "print-cache", "Prints information about the service cache.", NULL, print_cache_cmd },
+	{ "examine", "Runs the specified analysis tool against launchd in a non-reentrant manner.", "[<tool> [arg0, arg1, ... , @PID, ...]]", examine_cmd },
 	{ "reboot", "Initiates a system reboot of the specified type.", "[system|halt|obliterate|userspace] [-s]", reboot_cmd },
 	{ "load", "Bootstraps a service or directory of services.", "<service-path, service-path2, ...>", load_cmd },
 	{ "unload", "Unloads a service or directory of services.", "<service-path, service-path2, ...>", load_cmd },
@@ -291,4 +293,15 @@ launchctl_print_domain_str(FILE *s, xpc_object_t msg)
 			fprintf(s, "user gui: %"PRIu64, handle);
 			break;
 	}
+}
+
+int
+examine_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
+{
+	if (argc == 2)
+		return EUSAGE;
+	// Maybe implement actual code for this in the future?
+	// But the chance of people using a DEVELOPMENT launchd is very low.
+	fprintf(stderr, "Examination is only available on the DEVELOPMENT variant\n");
+	return ENOTDEVELOPMENT;
 }

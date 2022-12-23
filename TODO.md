@@ -8,7 +8,7 @@
 1. [ ] kill
 1. [ ] blame
 1. [x] print
-1. [ ] print-cache
+1. [x] print-cache
 1. [ ] print-disabled
 1. [ ] plist
 1. [ ] procinfo
@@ -16,7 +16,7 @@
 1. [ ] resolveport
 1. [ ] limit
 1. [ ] runstats
-1. [ ] examine
+1. [x] examine
 1. [ ] config
 1. [ ] dumpstate
 1. [x] reboot

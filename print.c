@@ -75,3 +75,42 @@ print_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 
 	return ret;
 }
+
+int
+print_cache_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
+{
+	int ret;
+	xpc_object_t reply;
+	const char *name = NULL;
+	vm_address_t addr;
+	vm_size_t sz = 0x1400000;
+
+	xpc_object_t dict = xpc_dictionary_create(NULL, NULL, 0);
+	*msg = dict;
+
+	xpc_dictionary_set_uint64(dict, "type", 1);
+	xpc_dictionary_set_uint64(dict, "handle", 0);
+
+	if (__isPlatformVersionAtLeast(2, 15, 0, 0)) {
+		addr = launchctl_create_shmem(dict, sz);
+	} else {
+		xpc_dictionary_set_fd(dict, "fd", STDOUT_FILENO);
+	}
+	xpc_dictionary_set_bool(dict, "cache", true);
+
+	ret = launchctl_send_xpc_to_launchd(XPC_ROUTINE_PRINT, dict, &reply);
+
+	if (ret == 0) {
+		if (__isPlatformVersionAtLeast(2, 15, 0, 0)) {
+			launchctl_print_shmem(reply, addr, sz, stdout);
+			vm_deallocate(mach_task_self(), addr, sz);
+		}
+	} else if (ret < ENODOMAIN) {
+		if (ret == EINVAL)
+			fprintf(stderr, "Bad request.\n");
+		else
+			fprintf(stderr, "Could not print cache: %d: %s\n", ret, xpc_strerror(ret));
+	}
+
+	return ret;
+}

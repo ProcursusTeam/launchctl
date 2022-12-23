@@ -33,6 +33,7 @@ typedef int cmd_main(xpc_object_t *, int, char **, char **, char **);
 cmd_main list_cmd;
 cmd_main version_cmd;
 cmd_main help_cmd;
+cmd_main examine_cmd;
 
 // start_stop.c
 cmd_main stop_cmd;
@@ -40,6 +41,7 @@ cmd_main start_cmd;
 
 // print.c
 cmd_main print_cmd;
+cmd_main print_cache_cmd;
 
 // env.c
 cmd_main setenv_cmd;

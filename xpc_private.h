@@ -69,6 +69,7 @@ enum {
 	EBADRESP,
 	EMANY = 133,
 	EBADNAME = 140,
+	ENOTDEVELOPMENT = 142,
 };
 
 #endif
