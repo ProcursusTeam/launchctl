@@ -45,6 +45,7 @@ enum {
 	XPC_ROUTINE_SETENV = 819,
 	XPC_ROUTINE_GETENV = 820,
 	XPC_ROUTINE_PRINT = 828,
+	XPC_ROUTINE_DUMPSTATE = 834,
 };
 
 typedef xpc_object_t xpc_pipe_t;

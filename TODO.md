@@ -18,7 +18,7 @@
 1. [ ] runstats
 1. [x] examine
 1. [ ] config
-1. [ ] dumpstate
+1. [x] dumpstate
 1. [x] reboot
 1. [ ] userswitch
 1. [x] load
