@@ -2,7 +2,7 @@
 1. [x] bootout
 1. [x] enable
 1. [x] disable
-1. [ ] kickstart
+1. [x] kickstart
 1. [ ] attach
 1. [ ] debug
 1. [ ] kill

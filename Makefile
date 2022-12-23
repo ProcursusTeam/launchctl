@@ -1,7 +1,7 @@
 PREFIX  ?= 
 DESTDIR ?=
 
-SRC    := launchctl.c xpc_helper.c start_stop.c print.c env.c load.c enable.c reboot.c bootstrap.c error.c remove.c
+SRC    := launchctl.c xpc_helper.c start_stop.c print.c env.c load.c enable.c reboot.c bootstrap.c error.c remove.c kickstart.c
 LDLIBS := 
 
 all: launchctl

@@ -52,6 +52,7 @@ static const struct {
 	{ "bootout", "Tears down a domain or removes a service from a domain.", "<domain-target> [service-path1, service-path2, ...] | <service-target>", bootout_cmd },
 	{ "enable", "Enables an existing service.", "<service-target>", enable_cmd },
 	{ "disable", "Disables an existing service.", "<service-target>", enable_cmd },
+	{ "kickstart", "Forces an existing service to start.", "[-k] [-p] <service-target>", kickstart_cmd },
 	{ "print", "Prints a description of a domain or service.", "<domain-target> | <service-target>", print_cmd },
 	{ "print-cache", "Prints information about the service cache.", NULL, print_cache_cmd },
 	{ "print-disabled", "Prints which services are disabled.", NULL, print_disabled_cmd },
