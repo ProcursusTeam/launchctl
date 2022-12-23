@@ -71,6 +71,7 @@ static const struct {
 	{ "setenv", "Sets the specified environment variables for all services within the domain.", "<<key> <value>, ...>", setenv_cmd },
 	{ "unsetenv", "Unsets the specified environment variables for all services within the domain.", "<key, ...>", setenv_cmd },
 	{ "getenv", "Gets the value of an environment variable from within launchd.", "<key>", getenv_cmd },
+	{ "submit", "Submit a basic job from the command line.", "-l <label> [-p <program>] [-o <stdout-path>] [-e <stderr-path] -- <command> [arg0, arg1, ...]", submit_cmd },
 	{ "managerpid", "Prints the PID of the launchd controlling the session.", NULL, managerpid_cmd },
 	{ "manageruid", "Prints the UID of the current launchd session.", NULL, manageruid_cmd },
 	{ "managername", "Prints the name of the current launchd session.", NULL, managername_cmd },
@@ -319,4 +320,10 @@ int
 config_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 {
 	return ENOTSUP;
+}
+
+int
+submit_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
+{
+	return EDEPRECATED;
 }

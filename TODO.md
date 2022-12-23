@@ -32,7 +32,7 @@
 1. [x] getenv
 1. [ ] bsexec
 1. [ ] asuser
-1. [ ] submit
+1. [x] submit
 1. [x] managerpid
 1. [x] manageruid
 1. [x] managername
