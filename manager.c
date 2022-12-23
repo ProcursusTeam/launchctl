@@ -26,54 +26,65 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include <errno.h>
+#include <getopt.h>
+#include <inttypes.h>
+#include <signal.h>
+#include <stdio.h>
+
 #include <xpc/xpc.h>
+#include "xpc_private.h"
 
-#ifndef _XPC_PRIVATE_H_
-#define _XPC_PRIVATE_H_
+#include "vproc_priv.h"
 
-enum {
-	XPC_ROUTINE_KICKSTART_SERVICE = 702,
-	XPC_ROUTINE_BLAME_SERVICE = 707,
-	XPC_ROUTINE_PRINT_SERVICE = 708,
-	XPC_ROUTINE_LOAD = 800,
-	XPC_ROUTINE_UNLOAD = 801,
-	XPC_ROUTINE_ENABLE = 808,
-	XPC_ROUTINE_DISABLE = 809,
-	XPC_ROUTINE_SERVICE_KILL = 812,
-	XPC_ROUTINE_SERVICE_START = 813,
-	XPC_ROUTINE_SERVICE_STOP = 814,
-	XPC_ROUTINE_LIST = 815,
-	XPC_ROUTINE_REMOVE = 816,
-	XPC_ROUTINE_SETENV = 819,
-	XPC_ROUTINE_GETENV = 820,
-	XPC_ROUTINE_PRINT = 828,
-	XPC_ROUTINE_DUMPSTATE = 834,
-};
+#include "launchctl.h"
 
-typedef xpc_object_t xpc_pipe_t;
+int
+managerpid_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
+{
+	void *err;
+	int64_t pid;
 
-int xpc_pipe_routine(xpc_pipe_t pipe, xpc_object_t message, xpc_object_t XPC_GIVES_REFERENCE *reply);
-int _xpc_pipe_interface_routine(xpc_pipe_t pipe, uint64_t routine, xpc_object_t message, xpc_object_t XPC_GIVES_REFERENCE *reply, uint64_t flags);
+	err = vproc_swap_integer(NULL, VPROC_GSK_MGR_PID, 0, &pid);
+	if (err == NULL)
+		printf("%"PRId64"\n", pid);
+	else {
+		fprintf(stderr, "Could not get manager PID.\n");
+		return EWTF;
+	}
 
-const char *xpc_strerror(int);
+	return 0;
+}
 
-#define XPC_TYPE_MACH_SEND (&_xpc_type_mach_send)
-XPC_EXPORT
-XPC_TYPE(_xpc_type_mach_send);
+int
+manageruid_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
+{
+	void *err;
+	int64_t uid;
 
-typedef void (*xpc_dictionary_applier_f)(const char *key, xpc_object_t val, void *ctx);
-void xpc_dictionary_apply_f(xpc_object_t xdict, void *ctx, xpc_dictionary_applier_f applier);
+	err = vproc_swap_integer(NULL, VPROC_GSK_MGR_UID, 0, &uid);
+	if (err == NULL)
+		printf("%"PRId64"\n", uid);
+	else {
+		fprintf(stderr, "Could not get manager UID.\n");
+		return EWTF;
+	}
 
-enum {
-	ENODOMAIN = 112,
-	ENOSERVICE = 113,
-	E2BIMPL = 116,
-	EUSAGE = 117,
-	EBADRESP = 118,
-	EMANY = 133,
-	EBADNAME = 140,
-	ENOTDEVELOPMENT = 142,
-	EWTF = 153,
-};
+	return 0;
+}
 
-#endif
+int
+managername_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
+{
+	void *err;
+	char *name;
+
+	err = vproc_swap_string(NULL, VPROC_GSK_MGR_NAME, NULL, &name);
+	if (err == NULL)
+		printf("%s\n", name);
+	else {
+		fprintf(stderr, "Could not get manager name.\n");
+		return EWTF;
+	}
+
+	return 0;
+}

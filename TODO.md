@@ -33,9 +33,9 @@
 1. [ ] bsexec
 1. [ ] asuser
 1. [ ] submit
-1. [ ] managerpid
-1. [ ] manageruid
-1. [ ] managername
+1. [x] managerpid
+1. [x] manageruid
+1. [x] managername
 1. [x] error
 1. [x] variant
 1. [x] version
