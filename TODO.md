@@ -5,7 +5,7 @@
 1. [x] kickstart
 1. [ ] attach
 1. [ ] debug
-1. [ ] kill
+1. [x] kill
 1. [ ] blame
 1. [x] print
 1. [x] print-cache
