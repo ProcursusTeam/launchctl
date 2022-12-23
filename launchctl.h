@@ -42,6 +42,7 @@ cmd_main start_cmd;
 // print.c
 cmd_main print_cmd;
 cmd_main print_cache_cmd;
+cmd_main print_disabled_cmd;
 
 // env.c
 cmd_main setenv_cmd;

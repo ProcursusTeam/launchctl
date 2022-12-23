@@ -54,6 +54,7 @@ static const struct {
 	{ "disable", "Disables an existing service.", "<service-target>", enable_cmd },
 	{ "print", "Prints a description of a domain or service.", "<domain-target> | <service-target>", print_cmd },
 	{ "print-cache", "Prints information about the service cache.", NULL, print_cache_cmd },
+	{ "print-disabled", "Prints which services are disabled.", NULL, print_disabled_cmd },
 	{ "examine", "Runs the specified analysis tool against launchd in a non-reentrant manner.", "[<tool> [arg0, arg1, ... , @PID, ...]]", examine_cmd },
 	{ "reboot", "Initiates a system reboot of the specified type.", "[system|halt|obliterate|userspace] [-s]", reboot_cmd },
 	{ "load", "Bootstraps a service or directory of services.", "<service-path, service-path2, ...>", load_cmd },
