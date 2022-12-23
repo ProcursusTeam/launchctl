@@ -26,53 +26,45 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include <errno.h>
+#include <getopt.h>
+#include <inttypes.h>
+#include <signal.h>
+#include <stdio.h>
+
 #include <xpc/xpc.h>
+#include "xpc_private.h"
 
-#ifndef _XPC_PRIVATE_H_
-#define _XPC_PRIVATE_H_
+#include "launchctl.h"
 
-enum {
-	XPC_ROUTINE_KICKSTART_SERVICE = 702,
-	XPC_ROUTINE_BLAME_SERVICE = 707,
-	XPC_ROUTINE_PRINT_SERVICE = 708,
-	XPC_ROUTINE_LOAD = 800,
-	XPC_ROUTINE_UNLOAD = 801,
-	XPC_ROUTINE_ENABLE = 808,
-	XPC_ROUTINE_DISABLE = 809,
-	XPC_ROUTINE_SERVICE_KILL = 812,
-	XPC_ROUTINE_SERVICE_START = 813,
-	XPC_ROUTINE_SERVICE_STOP = 814,
-	XPC_ROUTINE_LIST = 815,
-	XPC_ROUTINE_REMOVE = 816,
-	XPC_ROUTINE_SETENV = 819,
-	XPC_ROUTINE_GETENV = 820,
-	XPC_ROUTINE_PRINT = 828,
-	XPC_ROUTINE_DUMPSTATE = 834,
-};
+int
+blame_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
+{
+	if (argc < 2)
+		return EUSAGE;
 
-typedef xpc_object_t xpc_pipe_t;
+	xpc_object_t dict, reply;
+	const char *name, *reason;
+	int err;
 
-int xpc_pipe_routine(xpc_pipe_t pipe, xpc_object_t message, xpc_object_t XPC_GIVES_REFERENCE *reply);
-int _xpc_pipe_interface_routine(xpc_pipe_t pipe, uint64_t routine, xpc_object_t message, xpc_object_t XPC_GIVES_REFERENCE *reply, uint64_t flags);
+	dict = xpc_dictionary_create(NULL, NULL, 0);
+	*msg = dict;
 
-const char *xpc_strerror(int);
+	if ((err = launchctl_setup_xpc_dict_for_service_name(argv[1], dict, &name)) != 0)
+		return err;
+	if (name == NULL)
+		return EBADNAME;
 
-#define XPC_TYPE_MACH_SEND (&_xpc_type_mach_send)
-XPC_EXPORT
-XPC_TYPE(_xpc_type_mach_send);
+	err = launchctl_send_xpc_to_launchd(XPC_ROUTINE_BLAME_SERVICE, dict, &reply);
 
-typedef void (*xpc_dictionary_applier_f)(const char *key, xpc_object_t val, void *ctx);
-void xpc_dictionary_apply_f(xpc_object_t xdict, void *ctx, xpc_dictionary_applier_f applier);
+	if (err == 0) {
+		reason = xpc_dictionary_get_string(reply, "reason");
+		if (reason == NULL)
+			return EBADRESP;
+		printf("%s\n", reason);
+	} else if (err == EPERM)
+		fprintf(stderr, "Not privileged to signal service.\n");
+	else if (err == ESRCH)
+		fprintf(stderr, "No process to signal.\n");
 
-enum {
-	ENODOMAIN = 112,
-	ENOSERVICE = 113,
-	E2BIMPL = 116,
-	EUSAGE = 117,
-	EBADRESP = 118,
-	EMANY = 133,
-	EBADNAME = 140,
-	ENOTDEVELOPMENT = 142,
-};
-
-#endif
+	return err;
+}

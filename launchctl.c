@@ -54,6 +54,7 @@ static const struct {
 	{ "disable", "Disables an existing service.", "<service-target>", enable_cmd },
 	{ "kickstart", "Forces an existing service to start.", "[-k] [-p] <service-target>", kickstart_cmd },
 	{ "kill", "Sends a signal to the service instance.", "<signal-number|signal-name> <service-target>", kill_cmd },
+	{ "blame", "Prints the reason a service is running.", "<service-target>", blame_cmd },
 	{ "print", "Prints a description of a domain or service.", "<domain-target> | <service-target>", print_cmd },
 	{ "print-cache", "Prints information about the service cache.", NULL, print_cache_cmd },
 	{ "print-disabled", "Prints which services are disabled.", NULL, print_disabled_cmd },
