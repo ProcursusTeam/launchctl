@@ -25,53 +25,33 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
 #include <xpc/xpc.h>
+#include "xpc_private.h"
 
-typedef int cmd_main(xpc_object_t *, int, char **, char **, char **);
+#include "launchctl.h"
 
-// launchctl.c
-cmd_main list_cmd;
-cmd_main version_cmd;
-cmd_main help_cmd;
+int remove_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple) {
+	xpc_object_t dict, reply;
+	int err = 0;
 
-// start_stop.c
-cmd_main stop_cmd;
-cmd_main start_cmd;
+	if (argc < 2)
+		return EUSAGE;
 
-// print.c
-cmd_main print_cmd;
+	dict = xpc_dictionary_create(NULL, NULL, 0);
+	launchctl_setup_xpc_dict(dict);
+	*msg = dict;
+	xpc_dictionary_set_string(dict, "name", argv[1]);
 
-// env.c
-cmd_main setenv_cmd;
-cmd_main getenv_cmd;
+	err = launchctl_send_xpc_to_launchd(XPC_ROUTINE_REMOVE, dict, &reply);
+	if (err == ENOSERVICE)
+		return 0;
+	else if (err == EPERM)
+		fprintf(stderr, "Not privileged to remove service\n");
 
-// load.c
-cmd_main load_cmd;
-
-// enable.c
-cmd_main enable_cmd;
-
-// reboot.c
-cmd_main reboot_cmd;
-
-// bootstrap.c
-cmd_main bootstrap_cmd;
-cmd_main bootout_cmd;
-
-// error.c
-cmd_main error_cmd;
-
-// remove.c
-cmd_main remove_cmd;
-
-void launchctl_xpc_object_print(xpc_object_t, const char *name, int level);
-int launchctl_send_xpc_to_launchd(uint64_t routine, xpc_object_t msg, xpc_object_t *reply);
-void launchctl_setup_xpc_dict(xpc_object_t dict);
-int launchctl_setup_xpc_dict_for_service_name(char *servicetarget, xpc_object_t dict, const char **name);
-void launchctl_print_domain_str(FILE *s, xpc_object_t msg);
-xpc_object_t launchctl_parse_load_unload(unsigned int domain, int count, char **list);
-vm_address_t launchctl_create_shmem(xpc_object_t, vm_size_t);
-void launchctl_print_shmem(xpc_object_t dict, vm_address_t addr, vm_size_t sz, FILE *outfd);
-
-// This is part of compiler-rt, I just don't want to use objc
-int32_t __isPlatformVersionAtLeast(uint32_t Platform, uint32_t Major, uint32_t Minor, uint32_t Subminor);
+	return err;
+}

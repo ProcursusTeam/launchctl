@@ -56,6 +56,7 @@ static const struct {
 	{ "reboot", "Initiates a system reboot of the specified type.", "[system|halt|obliterate|userspace] [-s]", reboot_cmd },
 	{ "load", "Bootstraps a service or directory of services.", "<service-path, service-path2, ...>", load_cmd },
 	{ "unload", "Unloads a service or directory of services.", "<service-path, service-path2, ...>", load_cmd },
+	{ "remove", "Unloads the specified service name.", "<service-name>", remove_cmd },
 	{ "list", "Lists information about services.", "[service-name]", list_cmd },
 	{ "start", "Starts the specified service.", "<service-name>", start_cmd },
 	{ "stop", "Stops the specified service if it is running.", "<service-name>", stop_cmd },
