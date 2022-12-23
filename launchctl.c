@@ -53,15 +53,24 @@ static const struct {
 	{ "enable", "Enables an existing service.", "<service-target>", enable_cmd },
 	{ "disable", "Disables an existing service.", "<service-target>", enable_cmd },
 	{ "kickstart", "Forces an existing service to start.", "[-k] [-p] <service-target>", kickstart_cmd },
+	{ "attach", "Attach the system's debugger to a service.", "[-k] [-s] [-x] <service-target>", todo_cmd },
+	{ "debug", "Configures the next invocation of a service for debugging.", "<service-target> [--program <program-path>] [--start-suspended] [oc-stack-logging] [--malloc-nano-allocator] [--debug-libraries] [--NSZombie] [--32] [--stdin [path]] [--stdout [path]] [--stderr [path]] [--environment VARIABLE0=value0 VARIABLE1=value1 ...] -- [argv0 argv1 ...]", todo_cmd },
 	{ "kill", "Sends a signal to the service instance.", "<signal-number|signal-name> <service-target>", kill_cmd },
 	{ "blame", "Prints the reason a service is running.", "<service-target>", blame_cmd },
 	{ "print", "Prints a description of a domain or service.", "<domain-target> | <service-target>", print_cmd },
 	{ "print-cache", "Prints information about the service cache.", NULL, print_cache_cmd },
 	{ "print-disabled", "Prints which services are disabled.", NULL, print_disabled_cmd },
+	{ "plist", "Prints a property list embedded in a binary (targets the Info.plist by default).", "[segment,section] <path>", todo_cmd },
+	{ "procinfo", "Prints port information about a process.", "<pid>", todo_cmd },
+	{ "hostinfo", "Prints port information about the host.", NULL, todo_cmd },
+	{ "resolveport", "Resolves a port name from a process to an endpoint in launchd.", "<owner-pid> <port-name>", todo_cmd },
+	{ "limit", "Reads or modifies launchd's resource limits.", "[<limit-name> [<both-limits> | <soft-limit> <hard-limit>]", todo_cmd },
+	{ "runstats", "Prints performance statistics for a service.", "<service-target>", todo_cmd },
 	{ "examine", "Runs the specified analysis tool against launchd in a non-reentrant manner.", "[<tool> [arg0, arg1, ... , @PID, ...]]", examine_cmd },
 	{ "config", "Modifies persistent configuration parameters for launchd domains.", NULL, config_cmd },
 	{ "dumpstate", "Dumps launchd state to stdout.", NULL, dumpstate_cmd },
 	{ "reboot", "Initiates a system reboot of the specified type.", "[system|halt|obliterate|userspace] [-s]", reboot_cmd },
+	{ "userswitch", "Initiates a user switch.", "<old-uid> <new-uid>", todo_cmd },
 	{ "load", "Bootstraps a service or directory of services.", "<service-path, service-path2, ...>", load_cmd },
 	{ "unload", "Unloads a service or directory of services.", "<service-path, service-path2, ...>", load_cmd },
 	{ "remove", "Unloads the specified service name.", "<service-name>", remove_cmd },
@@ -71,6 +80,8 @@ static const struct {
 	{ "setenv", "Sets the specified environment variables for all services within the domain.", "<<key> <value>, ...>", setenv_cmd },
 	{ "unsetenv", "Unsets the specified environment variables for all services within the domain.", "<key, ...>", setenv_cmd },
 	{ "getenv", "Gets the value of an environment variable from within launchd.", "<key>", getenv_cmd },
+	{ "bsexec", "Execute a program in another process' bootstrap context.", "<pid> <program> [...]", todo_cmd },
+	{ "asuser", "Execute a program in the bootstrap context of a given user.", "<uid> <program> [...]", todo_cmd },
 	{ "submit", "Submit a basic job from the command line.", "-l <label> [-p <program>] [-o <stdout-path>] [-e <stderr-path] -- <command> [arg0, arg1, ...]", submit_cmd },
 	{ "managerpid", "Prints the PID of the launchd controlling the session.", NULL, managerpid_cmd },
 	{ "manageruid", "Prints the UID of the current launchd session.", NULL, manageruid_cmd },
@@ -326,4 +337,10 @@ int
 submit_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 {
 	return EDEPRECATED;
+}
+
+int
+todo_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
+{
+	return ENOTSUP;
 }

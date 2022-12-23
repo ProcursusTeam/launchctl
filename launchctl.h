@@ -36,6 +36,7 @@ cmd_main help_cmd;
 cmd_main examine_cmd;
 cmd_main config_cmd;
 cmd_main submit_cmd;
+cmd_main todo_cmd; // Placeholder
 
 // start_stop.c
 cmd_main stop_cmd;
