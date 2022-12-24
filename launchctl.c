@@ -38,7 +38,7 @@
 
 #include "launchctl.h"
 
-__SCCSID("@(#)PROGRAM:launchctl  PROJECT:ProcursusTeam/launchctl  VERSION:1.0");
+__SCCSID("@(#)PROGRAM:launchctl  PROJECT:ProcursusTeam/launchctl  VERSION:1.0.1");
 
 // TODO: Improve the help to support showing more information
 // Ex. `launchctl help load`
