@@ -16,5 +16,5 @@ clean:
 
 install: launchctl
 	install -d $(DESTDIR)$(PREFIX)/bin/
-	install -m744 launchctl $(DESTDIR)$(PREFIX)/bin/launchctl
+	install -m755 launchctl $(DESTDIR)$(PREFIX)/bin/launchctl
 
