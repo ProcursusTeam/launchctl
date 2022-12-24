@@ -30,6 +30,9 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <spawn.h>
+#include <sys/wait.h>
+#include <signal.h>
 
 #include <xpc/xpc.h>
 
@@ -321,10 +324,53 @@ examine_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 {
 	if (argc == 2)
 		return EUSAGE;
-	// Maybe implement actual code for this in the future?
-	// But the chance of people using a DEVELOPMENT launchd is very low.
-	fprintf(stderr, "Examination is only available on the DEVELOPMENT variant\n");
-	return ENOTDEVELOPMENT;
+	int ret;
+	xpc_object_t dict, reply;
+	dict = xpc_dictionary_create(NULL, NULL, 0);
+	xpc_dictionary_set_uint64(dict, "type", 1);
+	xpc_dictionary_set_uint64(dict, "handle", 0);
+	ret = launchctl_send_xpc_to_launchd(XPC_ROUTINE_EXAMINE, dict, &reply);
+	if (ret == ENOTDEVELOPMENT) {
+		fprintf(stderr, "Examination is only available on the DEVELOPMENT variant.\n");
+		return ret;
+	} else if (ret == ENOTSUP) {
+		fprintf(stderr, "Examination is not available on this platform.\n");
+		return ret;
+	} else if (ret != 0) {
+		return ret;
+	}
+	int64_t candidate_pid = xpc_dictionary_get_int64(reply, "pid");
+	char candidate_pid_str[0x18];
+	snprintf(candidate_pid_str, 0x18, "%" PRId64, candidate_pid);
+	if (candidate_pid < 2) {
+		return EBADRESP;
+	}
+	if (argc == 1) {
+		printf("%" PRId64 "\n", candidate_pid);
+		return 0;
+	}
+	for (uint64_t i = 2; argv[i] != NULL; i++) {
+		if (strcmp(argv[i], "@PID") != 0) continue;
+		argv[i] = candidate_pid_str;
+	}
+	pid_t examiner_pid = 0;
+	int examiner_status = 0;
+	int pspawn_ret = posix_spawnp(&examiner_pid, argv[1], NULL, NULL, &argv[1], envp);
+	if (pspawn_ret != 0) {
+		fprintf(stderr, "posix_spawnp(): %d: %s\n", pspawn_ret, strerror(pspawn_ret));
+		return ret;
+	}
+	pid_t waitpid_ret = waitpid(examiner_pid, &examiner_status, 0);
+	if (waitpid_ret != examiner_pid) {
+		fprintf(stderr, "waitpid(): %d: %s\n", errno, strerror(errno));
+		return ret;
+	}
+	int kill_ret = kill(candidate_pid, SIGKILL);
+	if (kill_ret != 0) {
+		fprintf(stderr, "kill(): %d: %s\n", errno, strerror(errno));
+		return ret;
+	}
+	return 0;
 }
 
 int
