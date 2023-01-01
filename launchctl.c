@@ -40,6 +40,8 @@
 
 __SCCSID("@(#)PROGRAM:launchctl  PROJECT:ProcursusTeam/launchctl  VERSION:1.0.1");
 
+char launchctl __attribute__((section("__TEXT,__launchctl"))) = 1;
+
 // TODO: Improve the help to support showing more information
 // Ex. `launchctl help load`
 static const struct {
