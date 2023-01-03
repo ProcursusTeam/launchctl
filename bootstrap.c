@@ -25,6 +25,9 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include <sys/mman.h>
+#include <sys/stat.h>
+
 #include <errno.h>
 #include <getopt.h>
 #include <stdio.h>
@@ -48,6 +51,11 @@ bootstrap_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **appl
 
 	dict = xpc_dictionary_create(NULL, NULL, 0);
 	*msg = dict;
+	if (strcmp(argv[1], "--angel") == 0) {
+		xpc_dictionary_set_bool(dict, "angel", true);
+		argc--;
+		argv++;
+	}
 	ret = launchctl_setup_xpc_dict_for_service_name(argv[1], dict, &name);
 	if (ret != 0)
 		return ret;
@@ -57,6 +65,22 @@ bootstrap_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **appl
 	if (argc > 2) {
 		paths = launchctl_parse_load_unload(0, argc - 2, argv + 2);
 		xpc_dictionary_set_value(dict, "paths", paths);
+		if (__isPlatformVersionAtLeast(2, 16, 0, 0)) {
+			if (xpc_dictionary_get_uint64(dict, "type") == 1 && xpc_user_sessions_enabled() != 0) {
+				xpc_array_apply(paths, ^bool (size_t index, xpc_object_t val) {
+						xpc_object_t plist = launchctl_xpc_from_plist(xpc_string_get_string_ptr(val));
+						if (plist != NULL && xpc_get_type(plist) == XPC_TYPE_DICTIONARY) {
+							if (xpc_dictionary_get_value(plist, "LimitLoadToSessionType") != 0) {
+								xpc_release(plist);
+								return true;
+							}
+						}
+						xpc_dictionary_set_uint64(dict, "type", 2);
+						xpc_dictionary_set_uint64(dict, "handle", xpc_user_sessions_get_foreground_uid(0));
+						return false;
+				});
+			}
+		}
 	}
 	ret = launchctl_send_xpc_to_launchd(XPC_ROUTINE_LOAD, dict, &reply);
 	if (ret != ENODOMAIN) {
@@ -108,6 +132,22 @@ bootout_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 	if (argc > 2 && name == NULL) {
 		paths = launchctl_parse_load_unload(0, argc - 2, argv + 2);
 		xpc_dictionary_set_value(dict, "paths", paths);
+		if (__isPlatformVersionAtLeast(2, 16, 0, 0)) {
+			if (xpc_dictionary_get_uint64(dict, "type") == 1 && xpc_user_sessions_enabled() != 0) {
+				xpc_array_apply(paths, ^bool (size_t index, xpc_object_t val) {
+						xpc_object_t plist = launchctl_xpc_from_plist(xpc_string_get_string_ptr(val));
+						if (plist != NULL && xpc_get_type(plist) == XPC_TYPE_DICTIONARY) {
+							if (xpc_dictionary_get_value(plist, "LimitLoadToSessionType") != 0) {
+								xpc_release(plist);
+								return true;
+							}
+						}
+						xpc_dictionary_set_uint64(dict, "type", 2);
+						xpc_dictionary_set_uint64(dict, "handle", xpc_user_sessions_get_foreground_uid(0));
+						return false;
+				});
+			}
+		}
 	}
 
 	if (__isPlatformVersionAtLeast(2, 15, 0, 0))
@@ -131,10 +171,10 @@ bootout_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 					return true;
 			});
 			int64_t err;
-			if ((err = xpc_dictionary_get_int64(reply, "bootstrap-error")) == 0)
+			if ((err = xpc_dictionary_get_int64(reply, "bootout-error")) == 0)
 				return 0;
 			else {
-				fprintf(stderr, "Bootstrap failed: %lld: %s\n", err, strerror(err));
+				fprintf(stderr, "Bootout failed: %lld: %s\n", err, strerror(err));
 				return err;
 			}
 		}

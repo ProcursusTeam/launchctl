@@ -25,7 +25,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include <math.h>
+#include <sys/stat.h>
 #include <stdint.h>
 #include <sysdir.h>
 
@@ -222,4 +222,29 @@ launchctl_print_shmem(xpc_object_t dict, vm_address_t addr, vm_size_t sz, FILE *
 		fflush(outfd);
 		return;
 	}
+}
+
+xpc_object_t
+launchctl_xpc_from_plist(const char *path)
+{
+	xpc_object_t plist = NULL;
+	struct stat sb;
+	void *f;
+	int fd;
+
+	if ((fd = open(path, O_RDONLY)) == -1)
+		return NULL;
+
+	if (fstat(fd, &sb) == -1)
+		goto cleanup;
+
+	if ((f = mmap(NULL, sb.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
+		goto cleanup;
+
+	plist = xpc_create_from_plist(f, sb.st_size);
+
+	munmap(f, sb.st_size);
+cleanup:
+	close(fd);
+	return plist;
 }
