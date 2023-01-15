@@ -1,7 +1,7 @@
 /*-
  * SPDX-License-Identifier: BSD-2-Clause
  *
- * Copyright (c) 2022 Procursus Team <team@procurs.us>
+ * Copyright (c) 2022-2023 Procursus Team <team@procurs.us>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -95,6 +95,9 @@ cmd_main managername_cmd;
 
 // attach.c
 cmd_main attach_cmd;
+
+// plist.c
+cmd_main plist_cmd;
 
 // runstats.c
 cmd_main runstats_cmd;
