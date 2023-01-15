@@ -65,11 +65,10 @@ const char *xpc_strerror(int);
 int64_t xpc_user_sessions_enabled(void);
 
 XPC_EXPORT XPC_RETURNS_RETAINED XPC_WARN_RESULT XPC_NONNULL1
-xpc_object_t
-xpc_create_from_plist(const void * data, size_t length);
+xpc_object_t xpc_create_from_plist(const void * data, size_t length);
 
-uint64_t
-xpc_user_sessions_get_foreground_uid(uint64_t);
+uint64_t xpc_user_sessions_get_foreground_uid(uint64_t);
+int launch_active_user_switch(long, long);
 
 #define XPC_TYPE_MACH_SEND (&_xpc_type_mach_send)
 XPC_EXPORT

@@ -20,7 +20,7 @@
 1. [x] config
 1. [x] dumpstate
 1. [x] reboot
-1. [ ] userswitch
+1. [x] userswitch
 1. [x] load
 1. [x] unload
 1. [x] remove
