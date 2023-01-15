@@ -1,7 +1,7 @@
 /*-
  * SPDX-License-Identifier: BSD-2-Clause
  *
- * Copyright (c) 2022 Procursus Team <team@procurs.us>
+ * Copyright (c) 2022-2023 Procursus Team <team@procurs.us>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
