@@ -25,16 +25,13 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include <sys/mman.h>
-#include <sys/stat.h>
-
 #include <errno.h>
-#include <getopt.h>
+#include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
-#include <sysdir.h>
+#include <string.h>
 
 #include <xpc/xpc.h>
-
 #include "xpc_private.h"
 
 #include "launchctl.h"

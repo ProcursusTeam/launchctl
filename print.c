@@ -26,10 +26,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
+#include <unistd.h>
+
+#include <mach/mach.h>
 
 #include <xpc/xpc.h>
-
 #include "xpc_private.h"
 
 #include "launchctl.h"

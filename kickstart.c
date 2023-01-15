@@ -28,7 +28,9 @@
 #include <errno.h>
 #include <getopt.h>
 #include <inttypes.h>
+#include <stdbool.h>
 #include <stdio.h>
+#include <unistd.h>
 
 #include <xpc/xpc.h>
 #include "xpc_private.h"

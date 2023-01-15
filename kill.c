@@ -26,10 +26,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include <errno.h>
-#include <getopt.h>
-#include <inttypes.h>
 #include <signal.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <strings.h>
 
 #include <xpc/xpc.h>
 #include "xpc_private.h"

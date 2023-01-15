@@ -25,19 +25,24 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include <sys/cdefs.h>
+#include <sys/wait.h>
+
 #include <errno.h>
 #include <inttypes.h>
+#include <signal.h>
+#include <spawn.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
-#include <spawn.h>
-#include <sys/wait.h>
-#include <signal.h>
+
+#include <mach/mach.h>
 
 #include <xpc/xpc.h>
-
 #include "xpc_private.h"
-#include "os_alloc_once.h"
 
 #include "launchctl.h"
 

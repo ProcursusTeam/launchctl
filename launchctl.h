@@ -25,7 +25,15 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include <stdint.h>
+#include <stdio.h>
+
+#include <mach/mach.h>
+
 #include <xpc/xpc.h>
+
+#ifndef _LAUNCHCTL_H_
+#define _LAUNCHCTL_H_
 
 typedef int cmd_main(xpc_object_t *, int, char **, char **, char **);
 
@@ -100,3 +108,4 @@ xpc_object_t launchctl_xpc_from_plist(const char *path);
 
 // This is part of compiler-rt, I just don't want to use objc
 int32_t __isPlatformVersionAtLeast(uint32_t Platform, uint32_t Major, uint32_t Minor, uint32_t Subminor);
+#endif

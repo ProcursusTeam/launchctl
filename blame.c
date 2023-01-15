@@ -26,9 +26,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include <errno.h>
-#include <getopt.h>
-#include <inttypes.h>
-#include <signal.h>
 #include <stdio.h>
 
 #include <xpc/xpc.h>

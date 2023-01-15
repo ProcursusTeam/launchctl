@@ -25,7 +25,9 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include <errno.h>
+#include <stddef.h>
+#include <stdint.h>
+
 #include <xpc/xpc.h>
 
 #ifndef _XPC_PRIVATE_H_
