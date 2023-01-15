@@ -38,6 +38,7 @@ enum {
 	XPC_ROUTINE_ATTACH_SERVICE = 703,
 	XPC_ROUTINE_BLAME_SERVICE = 707,
 	XPC_ROUTINE_PRINT_SERVICE = 708,
+	XPC_ROUNTINE_RUNSTATS = 709,
 	XPC_ROUTINE_LOAD = 800,
 	XPC_ROUTINE_UNLOAD = 801,
 	XPC_ROUTINE_ENABLE = 808,
@@ -76,6 +77,8 @@ XPC_TYPE(_xpc_type_mach_send);
 
 typedef void (*xpc_dictionary_applier_f)(const char *key, xpc_object_t val, void *ctx);
 void xpc_dictionary_apply_f(xpc_object_t xdict, void *ctx, xpc_dictionary_applier_f applier);
+typedef void (*xpc_array_applier_f)(size_t index, xpc_object_t value, void* context);
+void xpc_array_apply_f(xpc_object_t xarray, void *context, xpc_array_applier_f applier);
 
 enum {
 	ENODOMAIN = 112,
