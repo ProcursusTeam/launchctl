@@ -85,6 +85,9 @@ cmd_main managerpid_cmd;
 cmd_main manageruid_cmd;
 cmd_main managername_cmd;
 
+// attach.c
+cmd_main attach_cmd;
+
 void launchctl_xpc_object_print(xpc_object_t, const char *name, int level);
 int launchctl_send_xpc_to_launchd(uint64_t routine, xpc_object_t msg, xpc_object_t *reply);
 void launchctl_setup_xpc_dict(xpc_object_t dict);

@@ -58,7 +58,7 @@ static const struct {
 	{ "enable", "Enables an existing service.", "<service-target>", enable_cmd },
 	{ "disable", "Disables an existing service.", "<service-target>", enable_cmd },
 	{ "kickstart", "Forces an existing service to start.", "[-k] [-p] <service-target>", kickstart_cmd },
-	{ "attach", "Attach the system's debugger to a service.", "[-k] [-s] [-x] <service-target>", todo_cmd },
+	{ "attach", "Attach the system's debugger to a service.", "[-k] [-s] [-x] <service-target>", attach_cmd },
 	{ "debug", "Configures the next invocation of a service for debugging.", "<service-target> [--program <program-path>] [--start-suspended] [oc-stack-logging] [--malloc-nano-allocator] [--debug-libraries] [--NSZombie] [--32] [--stdin [path]] [--stdout [path]] [--stderr [path]] [--environment VARIABLE0=value0 VARIABLE1=value1 ...] -- [argv0 argv1 ...]", todo_cmd },
 	{ "kill", "Sends a signal to the service instance.", "<signal-number|signal-name> <service-target>", kill_cmd },
 	{ "blame", "Prints the reason a service is running.", "<service-target>", blame_cmd },
