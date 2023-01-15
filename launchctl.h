@@ -1,7 +1,7 @@
 /*-
  * SPDX-License-Identifier: BSD-2-Clause
  *
- * Copyright (c) 2022 Procursus Team <team@procurs.us>
+ * Copyright (c) 2022-2023 Procursus Team <team@procurs.us>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -95,6 +95,9 @@ cmd_main managername_cmd;
 
 // attach.c
 cmd_main attach_cmd;
+
+// plist.c
+cmd_main plist_cmd;
 
 void launchctl_xpc_object_print(xpc_object_t, const char *name, int level);
 int launchctl_send_xpc_to_launchd(uint64_t routine, xpc_object_t msg, xpc_object_t *reply);

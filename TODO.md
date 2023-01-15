@@ -10,7 +10,7 @@
 1. [x] print
 1. [x] print-cache
 1. [x] print-disabled
-1. [ ] plist
+1. [x] plist
 1. [ ] procinfo
 1. [ ] hostinfo
 1. [ ] resolveport
