@@ -3,7 +3,7 @@ DESTDIR ?=
 
 SRC    := launchctl.c xpc_helper.c start_stop.c print.c env.c load.c manager.c
 SRC    += enable.c reboot.c bootstrap.c error.c remove.c kickstart.c kill.c blame.c
-SRC    += attach.c plist.c
+SRC    += attach.c plist.c runstats.c
 LDLIBS := 
 
 all: launchctl

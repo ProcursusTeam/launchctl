@@ -15,7 +15,7 @@
 1. [ ] hostinfo
 1. [ ] resolveport
 1. [ ] limit
-1. [ ] runstats
+1. [x] runstats
 1. [x] examine
 1. [x] config
 1. [x] dumpstate
