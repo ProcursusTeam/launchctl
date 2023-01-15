@@ -1,7 +1,7 @@
 /*-
  * SPDX-License-Identifier: BSD-2-Clause
  *
- * Copyright (c) 2022 Procursus Team <team@procurs.us>
+ * Copyright (c) 2023 Procursus Team <team@procurs.us>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -113,7 +113,9 @@ int runstats_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **a
 	} else if (ret == EINVAL) {
 		fprintf(stderr, "Bad Request.\n");
 		return ret;
-	} else if (ret) return ret;
+	} else if (ret) {
+		return ret;
+	}
 	ret = 0;
 	runs = xpc_dictionary_get_value(reply, "runs");
 	if (runs == NULL || xpc_get_type(runs) != XPC_TYPE_ARRAY) {
