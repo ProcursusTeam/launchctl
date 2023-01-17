@@ -106,7 +106,7 @@ attach_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 	unsetenv("DYLD_FALLBACK_FRAMEWORK_PATH");
 	unsetenv("DYLD_FALLBACK_LIBRARY_PATH");
 	// setenv("PATH", "/usr/bin:/bin:/usr/sbin:/sbin", 1); Leave this disabled due to rootless PATHs
-	
+
 	pid_t lldbpid;
 	err = posix_spawnp(&lldbpid, "lldb", NULL, NULL, lldbargv, *_NSGetEnviron());
 

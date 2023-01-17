@@ -38,13 +38,19 @@
 typedef int cmd_main(xpc_object_t *, int, char **, char **, char **);
 
 // launchctl.c
-cmd_main list_cmd;
-cmd_main version_cmd;
 cmd_main help_cmd;
-cmd_main examine_cmd;
 cmd_main config_cmd;
 cmd_main submit_cmd;
 cmd_main todo_cmd; // Placeholder
+
+// version.c
+cmd_main version_cmd;
+
+// list.c
+cmd_main list_cmd;
+
+// examine.c
+cmd_main examine_cmd;
 
 // start_stop.c
 cmd_main stop_cmd;

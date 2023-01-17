@@ -117,7 +117,9 @@ get_plist_from_section_64(struct mach_header_64 *header, const char *segmentname
 	return NULL;
 }
 
-int plist_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple) {
+int
+plist_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
+{
 	int err = 0;
 	const char *wantedSegment = NULL;
 	const char *wantedSection = NULL;

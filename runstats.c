@@ -39,7 +39,9 @@
 
 #include "launchctl.h"
 
-static void print_runstats(size_t index, xpc_object_t dict, void* ctx) {
+static void
+print_runstats(size_t index, xpc_object_t dict, void *ctx)
+{
 	size_t ru_len = 0;
 	const struct rusage* ru = (const struct rusage*)xpc_dictionary_get_data(dict, "rusage", &ru_len);
 	if (ru_len != sizeof(struct rusage)) {
@@ -88,21 +90,26 @@ static void print_runstats(size_t index, xpc_object_t dict, void* ctx) {
 	return;
 }
 
-int runstats_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple) {
+int
+runstats_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
+{
 	if (argc != 2)
 		return EUSAGE;
-	
+
 	xpc_object_t dict, reply;
 	const char *name = NULL;
 	xpc_object_t runs;
 	int ret;
+
 	dict = xpc_dictionary_create(NULL, NULL, 0);
 	*msg = dict;
+
 	if ((ret = launchctl_setup_xpc_dict_for_service_name(argv[1], dict, &name))) {
 		return ret;
-	};
+	}
 	if (name == NULL)
 		return EBADNAME;
+
 	ret = launchctl_send_xpc_to_launchd(XPC_ROUNTINE_RUNSTATS, dict, &reply);
 	if (ret == ENOTSUP) {
 		fprintf(stderr, "Performance logging is not enabled.\n");
@@ -116,11 +123,13 @@ int runstats_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **a
 	} else if (ret) {
 		return ret;
 	}
+
 	ret = 0;
 	runs = xpc_dictionary_get_value(reply, "runs");
 	if (runs == NULL || xpc_get_type(runs) != XPC_TYPE_ARRAY) {
 		return EINVAL;
 	}
+
 	printf("\"%s\"\n", name);
 	xpc_array_apply_f(runs, NULL, print_runstats);
 	return ret;

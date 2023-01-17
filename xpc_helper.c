@@ -32,6 +32,7 @@
 #include <sys/stat.h>
 #include <sys/syslimits.h>
 
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -263,4 +264,37 @@ launchctl_xpc_from_plist(const char *path)
 cleanup:
 	close(fd);
 	return plist;
+}
+
+void
+launchctl_print_domain_str(FILE *s, xpc_object_t msg)
+{
+	uint64_t type, handle;
+
+	type = xpc_dictionary_get_uint64(msg, "type");
+	handle = xpc_dictionary_get_uint64(msg, "handle");
+
+	switch (type) {
+		case 1:
+			fprintf(s, "system");
+			break;
+		case 2:
+			fprintf(s, "uid: %"PRIu64, handle);
+			break;
+		case 3:
+			fprintf(s, "login: %"PRIu64, handle);
+			break;
+		case 4:
+			fprintf(s, "asid: %"PRIu64, handle);
+			break;
+		case 5:
+			fprintf(s, "pid: %"PRIu64, handle);
+			break;
+		case 7:
+			fprintf(s, "ports");
+			break;
+		case 8:
+			fprintf(s, "user gui: %"PRIu64, handle);
+			break;
+	}
 }

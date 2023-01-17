@@ -30,8 +30,8 @@
 
 #include <xpc/xpc.h>
 
-#ifndef _XPC_PRIVATE_H_
-#define _XPC_PRIVATE_H_
+#ifndef _LAUNCHCTL_XPC_PRIVATE_H_
+#define _LAUNCHCTL_XPC_PRIVATE_H_
 
 enum {
 	XPC_ROUTINE_KICKSTART_SERVICE = 702,

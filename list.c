@@ -1,5 +1,5 @@
 /*-
- * SPDX-License-Identifier: BSD-2-Clause
+ * SPDX-License-Identifier: BSD 2-Clause License
  *
  * Copyright (c) 2023 Procursus Team <team@procurs.us>
  * All rights reserved.
@@ -25,9 +25,8 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include <errno.h>
+#include <inttypes.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 #include <xpc/xpc.h>
 #include "xpc_private.h"
@@ -35,24 +34,49 @@
 #include "launchctl.h"
 
 int
-userswitch_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
+list_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 {
-	if (argc != 3)
-		return EUSAGE;
+	xpc_object_t reply;
+	char *label = NULL;
+	if (argc >= 2)
+		label = argv[1];
 
-	int ret = ENOTSUP;
-	long olduid = 0, newuid = 0;
+	xpc_object_t dict = xpc_dictionary_create(NULL, NULL, 0);
+	*msg = dict;
+	launchctl_setup_xpc_dict(dict);
+	if (label != NULL)
+		xpc_dictionary_set_string(dict, "name", label);
 
-	olduid = strtol(argv[1], NULL, 0);
-	newuid = strtol(argv[1], NULL, 0);
+	int ret = launchctl_send_xpc_to_launchd(XPC_ROUTINE_LIST, dict, &reply);
+	if (ret != 0)
+		return ret;
 
-	if (__isPlatformVersionAtLeast(2, 15, 0, 0)) {
-		ret = launch_active_user_switch(olduid, newuid);
+	if (label == NULL) {
+		xpc_object_t services = xpc_dictionary_get_value(reply, "services");
+		if (services == NULL)
+			return EBADRESP;
+		printf("PID\tStatus\tLabel\n");
+		(void)xpc_dictionary_apply(services, ^ bool (const char *key, xpc_object_t value) {
+				int64_t pid = xpc_dictionary_get_int64(value, "pid");
+				if (pid == 0)
+					printf("-\t");
+				else
+					printf("%"PRId64"\t", pid);
+				int64_t status = xpc_dictionary_get_int64(value, "status");
+				if (WIFSTOPPED(status))
+					printf("???\t%s\n", key);
+				else if (WIFEXITED(status))
+					printf("%d\t%s\n", WEXITSTATUS(status), key);
+				else if (WIFSIGNALED(status))
+					printf("-%d\t%s\n", WTERMSIG(status), key);
+				return true;
+		});
+	} else {
+		xpc_object_t service = xpc_dictionary_get_dictionary(reply, "service");
+		if (service == NULL)
+			return EBADRESP;
+
+		launchctl_xpc_object_print(service, NULL, 0);
 	}
-
-	if (ret != 0) {
-		fprintf(stderr, "Failed to perform a user switch: %d: %s\n", ret, xpc_strerror(ret));
-	}
-
-	return ret;
+	return 0;
 }

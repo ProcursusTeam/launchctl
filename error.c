@@ -33,9 +33,13 @@
 #include <xpc/xpc.h>
 #include "xpc_private.h"
 
-extern const char *bootstrap_strerror(kern_return_t r);
+#include "launchctl.h"
 
-int error_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple) {
+extern const char *bootstrap_strerror(kern_return_t);
+
+int
+error_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
+{
 	int retval = EUSAGE;
 
 	const char *extraMessagesTable[] = {

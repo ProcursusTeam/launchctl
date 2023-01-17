@@ -1,5 +1,5 @@
 /*-
- * SPDX-License-Identifier: BSD-2-Clause
+ * SPDX-License-Identifier: BSD 2-Clause License
  *
  * Copyright (c) 2023 Procursus Team <team@procurs.us>
  * All rights reserved.
@@ -27,7 +27,7 @@
  */
 #include <errno.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <string.h>
 
 #include <xpc/xpc.h>
 #include "xpc_private.h"
@@ -35,24 +35,39 @@
 #include "launchctl.h"
 
 int
-userswitch_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
+version_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 {
-	if (argc != 3)
-		return EUSAGE;
-
-	int ret = ENOTSUP;
-	long olduid = 0, newuid = 0;
-
-	olduid = strtol(argv[1], NULL, 0);
-	newuid = strtol(argv[1], NULL, 0);
+	xpc_object_t reply;
+	xpc_object_t dict = xpc_dictionary_create(NULL, NULL, 0);
+	*msg = dict;
+	launchctl_setup_xpc_dict(dict);
+	vm_address_t addr = 0;
+	vm_size_t sz = 0x100000;
 
 	if (__isPlatformVersionAtLeast(2, 15, 0, 0)) {
-		ret = launch_active_user_switch(olduid, newuid);
+		addr = launchctl_create_shmem(dict, sz);
+	} else {
+		xpc_dictionary_set_fd(dict, "fd", STDOUT_FILENO);
 	}
 
-	if (ret != 0) {
-		fprintf(stderr, "Failed to perform a user switch: %d: %s\n", ret, xpc_strerror(ret));
+	if (strcmp(argv[0], "variant") == 0)
+		xpc_dictionary_set_bool(dict, "variant", 1);
+	else
+		xpc_dictionary_set_bool(dict, "version", 1);
+
+	int ret = launchctl_send_xpc_to_launchd(XPC_ROUTINE_PRINT, dict, &reply);
+
+	if (ret == EINVAL) {
+		fprintf(stderr, "Bad request.\n");
+	} else if (ret != 0) {
+		fprintf(stderr, "Could not print variant: %d: %s\n", ret, xpc_strerror(ret));
 	}
+
+	if (__isPlatformVersionAtLeast(2, 15, 0, 0))
+		launchctl_print_shmem(reply, addr, sz, stdout);
+
+	if (addr != 0)
+		vm_deallocate(mach_task_self(), addr, sz);
 
 	return ret;
 }

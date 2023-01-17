@@ -33,7 +33,9 @@
 
 #include "launchctl.h"
 
-int remove_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple) {
+int
+remove_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
+{
 	xpc_object_t dict, reply;
 	int err = 0;
 

@@ -120,7 +120,7 @@ load_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 					}
 					return true;
 			});
-			
+
 		}
 	}
 

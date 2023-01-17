@@ -61,7 +61,7 @@ setenv_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 			i++;
 		} else {
 			xpc_object_t null = xpc_null_create();
-			xpc_dictionary_set_value(env, argv[i], null); 
+			xpc_dictionary_set_value(env, argv[i], null);
 			xpc_release(null);
 		}
 	}
