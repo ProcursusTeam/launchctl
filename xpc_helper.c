@@ -1,7 +1,7 @@
 /*-
  * SPDX-License-Identifier: BSD-2-Clause
  *
- * Copyright (c) 2022 Procursus Team <team@procurs.us>
+ * Copyright (c) 2022-2023 Procursus Team <team@procurs.us>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -132,7 +132,9 @@ launchctl_setup_xpc_dict(xpc_object_t dict)
 int
 launchctl_setup_xpc_dict_for_service_name(char *servicetarget, xpc_object_t dict, const char **name)
 {
-	*name = NULL;
+	if (name != NULL) {
+		*name = NULL;
+	}
 	const char *split[3] = {NULL, NULL, NULL};
 	for (int i = 0; i < 3; i++) {
 		char *var = strsep(&servicetarget, "/");
@@ -147,7 +149,9 @@ launchctl_setup_xpc_dict_for_service_name(char *servicetarget, xpc_object_t dict
 		xpc_dictionary_set_uint64(dict, "handle", 0);
 		if (split[1] != NULL && split[1][0] != '\0') {
 			xpc_dictionary_set_string(dict, "name", split[1]);
-			*name = split[1];
+			if (name != NULL) {
+				*name = split[1];
+			}
 		}
 		return 0;
 	} else if (strcmp(split[0], "user") == 0) {
@@ -164,7 +168,9 @@ launchctl_setup_xpc_dict_for_service_name(char *servicetarget, xpc_object_t dict
 		xpc_dictionary_set_uint64(dict, "handle", handle);
 		if (split[2] != NULL && split[2][0] != '\0') {
 			xpc_dictionary_set_string(dict, "name", split[2]);
-			*name = split[2];
+			if (name != NULL) {
+				*name = split[2];
+			}
 		}
 		return 0;
 	}

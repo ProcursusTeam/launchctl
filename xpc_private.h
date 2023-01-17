@@ -1,7 +1,7 @@
 /*-
  * SPDX-License-Identifier: BSD-2-Clause
  *
- * Copyright (c) 2022 Procursus Team <team@procurs.us>
+ * Copyright (c) 2022-2023 Procursus Team <team@procurs.us>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,6 +50,7 @@ enum {
 	XPC_ROUTINE_REMOVE = 816,
 	XPC_ROUTINE_SETENV = 819,
 	XPC_ROUTINE_GETENV = 820,
+	XPC_ROUTINE_LIMIT = 825,
 	XPC_ROUTINE_EXAMINE = 826,
 	XPC_ROUTINE_PRINT = 828,
 	XPC_ROUTINE_DUMPSTATE = 834,

@@ -14,7 +14,7 @@
 1. [ ] procinfo
 1. [ ] hostinfo
 1. [ ] resolveport
-1. [ ] limit
+1. [x] limit
 1. [x] runstats
 1. [x] examine
 1. [x] config

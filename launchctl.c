@@ -74,7 +74,7 @@ static const struct {
 	{ "procinfo", "Prints port information about a process.", "<pid>", todo_cmd },
 	{ "hostinfo", "Prints port information about the host.", NULL, todo_cmd },
 	{ "resolveport", "Resolves a port name from a process to an endpoint in launchd.", "<owner-pid> <port-name>", todo_cmd },
-	{ "limit", "Reads or modifies launchd's resource limits.", "[<limit-name> [<both-limits> | <soft-limit> <hard-limit>]", todo_cmd },
+	{ "limit", "Reads or modifies launchd's resource limits.", "[<limit-name> [<both-limits> | <soft-limit> <hard-limit>]", limit_cmd },
 	{ "runstats", "Prints performance statistics for a service.", "<service-target>", runstats_cmd },
 	{ "examine", "Runs the specified analysis tool against launchd in a non-reentrant manner.", "[<tool> [arg0, arg1, ... , @PID, ...]]", examine_cmd },
 	{ "config", "Modifies persistent configuration parameters for launchd domains.", NULL, config_cmd },
