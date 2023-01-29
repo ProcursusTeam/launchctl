@@ -134,7 +134,7 @@ launchctl_setup_xpc_dict(xpc_object_t dict)
 bool
 launchctl_test_xpc_send(uint64_t type, uint64_t handle, const char *name)
 {
-	xpc_object_t dict = xpc_dictionary_create_empty();
+	xpc_object_t dict = xpc_dictionary_create(NULL, NULL, 0);
 	xpc_object_t reply = NULL;
 	xpc_dictionary_set_uint64(dict, "type", type);
 	xpc_dictionary_set_uint64(dict, "handle", handle);
