@@ -110,7 +110,7 @@ runstats_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple
 	if (name == NULL)
 		return EBADNAME;
 
-	ret = launchctl_send_xpc_to_launchd(XPC_ROUNTINE_RUNSTATS, dict, &reply);
+	ret = launchctl_send_xpc_to_launchd(XPC_ROUTINE_RUNSTATS, dict, &reply);
 	if (ret == ENOTSUP) {
 		fprintf(stderr, "Performance logging is not enabled.\n");
 		return ret;

@@ -32,6 +32,7 @@
 #include <sys/stat.h>
 #include <sys/syslimits.h>
 
+#include <errno.h>
 #include <inttypes.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -130,12 +131,28 @@ launchctl_setup_xpc_dict(xpc_object_t dict)
 	return;
 }
 
+bool
+launchctl_test_xpc_send(uint64_t type, uint64_t handle, const char *name)
+{
+	xpc_object_t dict = xpc_dictionary_create_empty();
+	xpc_object_t reply = NULL;
+	xpc_dictionary_set_uint64(dict, "type", type);
+	xpc_dictionary_set_uint64(dict, "handle", handle);
+	xpc_dictionary_set_string(dict, "name", name);
+	int err = launchctl_send_xpc_to_launchd(XPC_ROUTINE_UNKNOWN, dict, &reply);
+	return err == 0;
+}
+
 int
 launchctl_setup_xpc_dict_for_service_name(char *servicetarget, xpc_object_t dict, const char **name)
 {
+	uint64_t handle = 0;
+	uint64_t type = 0;
+
 	if (name != NULL) {
 		*name = NULL;
 	}
+
 	const char *split[3] = {NULL, NULL, NULL};
 	for (int i = 0; i < 3; i++) {
 		char *var = strsep(&servicetarget, "/");
@@ -145,7 +162,8 @@ launchctl_setup_xpc_dict_for_service_name(char *servicetarget, xpc_object_t dict
 	}
 	if (split[0] == NULL || split[0][0] == '\0')
 		return EBADNAME;
-	else if (strcmp(split[0], "system") == 0) {
+
+	if (strcmp(split[0], "system") == 0) {
 		xpc_dictionary_set_uint64(dict, "type", 1);
 		xpc_dictionary_set_uint64(dict, "handle", 0);
 		if (split[1] != NULL && split[1][0] != '\0') {
@@ -153,19 +171,42 @@ launchctl_setup_xpc_dict_for_service_name(char *servicetarget, xpc_object_t dict
 			if (name != NULL) {
 				*name = split[1];
 			}
+			if (__isPlatformVersionAtLeast(2, 16, 0, 0)) {
+				if (xpc_user_sessions_enabled() && launchctl_test_xpc_send(1, handle, split[1]) == false) {
+					uint64_t fguid = xpc_user_sessions_get_foreground_uid(0);
+					if (launchctl_test_xpc_send(2, fguid, split[1])) {
+						fprintf(stderr, "Warning: Please switch to user/foreground/%s service identifier\n", split[1]);
+						xpc_dictionary_set_uint64(dict, "type", 2);
+						xpc_dictionary_set_uint64(dict, "handle", xpc_user_sessions_get_foreground_uid(0));
+					}
+				}
+			}
 		}
 		return 0;
 	} else if (strcmp(split[0], "user") == 0) {
-		xpc_dictionary_set_uint64(dict, "type", 4);
+		xpc_dictionary_set_uint64(dict, "type", 2);
+		if (split[1] != NULL && strcmp(split[1], "foreground") == 0) {
+			if (__isPlatformVersionAtLeast(2, 16, 0, 0)) {
+				if (xpc_user_sessions_enabled() == 0) {
+					fprintf(stderr, "user/foreground/ specifier is not supported on this platform\n");
+					return ENOTSUP;
+				}
+				handle = xpc_user_sessions_get_foreground_uid(0);
+			}
+		}
 	} else if (strcmp(split[0], "session") == 0) {
 		xpc_dictionary_set_uint64(dict, "type", 4);
 	} else if (strcmp(split[0], "pid") == 0) {
 		xpc_dictionary_set_uint64(dict, "type", 5);
+	} else {
+		xpc_dictionary_set_uint64(dict, "type", 9);
 	}
 	if (split[1] != NULL) {
-		long long handle = strtoll(split[1], NULL, 10);
-		if (handle == -1)
-			return EUSAGE;
+		if (handle == 0) {
+			handle = strtoll(split[1], NULL, 10);
+			if (handle == -1)
+				return EUSAGE;
+		}
 		xpc_dictionary_set_uint64(dict, "handle", handle);
 		if (split[2] != NULL && split[2][0] != '\0') {
 			xpc_dictionary_set_string(dict, "name", split[2]);
