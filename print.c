@@ -84,7 +84,6 @@ print_cache_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **ap
 {
 	int ret;
 	xpc_object_t reply;
-	const char *name = NULL;
 	vm_address_t addr;
 	vm_size_t sz = 0x1400000;
 
@@ -123,7 +122,6 @@ print_disabled_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char *
 {
 	int ret;
 	xpc_object_t reply;
-	const char *name = NULL;
 	vm_address_t addr;
 	vm_size_t sz = 0x100000;
 
@@ -162,7 +160,6 @@ dumpstate_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **appl
 {
 	int ret;
 	xpc_object_t reply;
-	const char *name = NULL;
 	vm_address_t addr;
 	vm_size_t sz = 0x1400000;
 

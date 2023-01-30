@@ -8,3 +8,4 @@ a.out
 *.dSYM
 
 compile_commands.json
+include

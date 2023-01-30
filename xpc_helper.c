@@ -146,8 +146,7 @@ launchctl_test_xpc_send(uint64_t type, uint64_t handle, const char *name)
 int
 launchctl_setup_xpc_dict_for_service_name(char *servicetarget, xpc_object_t dict, const char **name)
 {
-	uint64_t handle = 0;
-	uint64_t type = 0;
+	long handle = 0;
 
 	if (name != NULL) {
 		*name = NULL;
@@ -203,7 +202,7 @@ launchctl_setup_xpc_dict_for_service_name(char *servicetarget, xpc_object_t dict
 	}
 	if (split[1] != NULL) {
 		if (handle == 0) {
-			handle = strtoll(split[1], NULL, 10);
+			handle = strtol(split[1], NULL, 10);
 			if (handle == -1)
 				return EUSAGE;
 		}
@@ -255,10 +254,9 @@ vm_address_t
 launchctl_create_shmem(xpc_object_t dict, vm_size_t sz)
 {
 	vm_address_t addr = 0;
-	kern_return_t err;
 	xpc_object_t shmem;
 
-	err = vm_allocate(mach_task_self(), &addr, sz, 0xf0000003);
+	vm_allocate(mach_task_self(), &addr, sz, 0xf0000003);
 	shmem = xpc_shmem_create((void*)addr, sz);
 	xpc_dictionary_set_value(dict, "shmem", shmem);
 

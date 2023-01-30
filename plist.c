@@ -128,7 +128,6 @@ plist_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 	size_t mappingSize = 0;
 	void *mapping = NULL;
 	xpc_object_t plist = NULL;
-	bool successfullyFound = false;
 
 	if (argc < 2) {
 		return EUSAGE;

@@ -49,7 +49,7 @@ attach_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 		return EUSAGE;
 
 	xpc_object_t dict, reply;
-	const char *name, *reason;
+	const char *name;
 	int err;
 
 	dict = xpc_dictionary_create(NULL, NULL, 0);

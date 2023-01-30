@@ -5,6 +5,14 @@ SRC := attach.c blame.c bootstrap.c enable.c env.c error.c examine.c kickstart.c
 SRC += kill.c launchctl.c limit.c list.c load.c manager.c plist.c print.c reboot.c
 SRC += remove.c runstats.c start_stop.c userswitch.c version.c xpc_helper.c
 
+ifeq ($(DEBUG),1)
+CFLAGS  += -O0 -g -fsanitize=address,undefined -fno-omit-frame-pointer
+LDFLAGS += -O0 -g -fsanitize=address,undefined -fno-omit-frame-pointer
+endif
+
+CFLAGS  += -fobjc-arc
+LDFLAGS += -fobjc-arc
+
 all: launchctl
 
 launchctl: $(SRC:.c=.o) Info.plist launchctl.xml
@@ -12,7 +20,7 @@ launchctl: $(SRC:.c=.o) Info.plist launchctl.xml
 	ldid -Icom.apple.xpc.launchctl -Slaunchctl.xml -Cadhoc launchctl
 
 clean:
-	rm -f launchctl $(SRC:%.c=%.o)
+	rm -rf launchctl launchctl.dSYM $(SRC:%.c=%.o)
 
 install: launchctl
 	install -d $(DESTDIR)$(PREFIX)/bin/

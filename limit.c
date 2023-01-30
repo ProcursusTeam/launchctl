@@ -46,7 +46,7 @@ limit_index(const char *name)
 		"maxproc",
 		"maxfiles"
 	};
-	for (int i = 0; i < (sizeof(limitnames) / sizeof(limitnames[0])); i++) {
+	for (unsigned long i = 0; i < (sizeof(limitnames) / sizeof(limitnames[0])); i++) {
 		if (strcmp(name, limitnames[i]) == 0) {
 			return i;
 		}
