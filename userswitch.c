@@ -46,7 +46,7 @@ userswitch_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **app
 	olduid = strtol(argv[1], NULL, 0);
 	newuid = strtol(argv[1], NULL, 0);
 
-	if (__isPlatformVersionAtLeast(2, 15, 0, 0)) {
+	if (__builtin_available(iOS 15, *)) {
 		ret = launch_active_user_switch(olduid, newuid);
 	}
 

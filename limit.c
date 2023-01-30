@@ -96,7 +96,7 @@ limit_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 printlimits:
 		xpc_dictionary_set_bool(dict, "print", true);
 
-		if (__isPlatformVersionAtLeast(2, 15, 0, 0)) {
+		if (__builtin_available(iOS 15, *)) {
 			addr = launchctl_create_shmem(dict, sz);
 		} else {
 			xpc_dictionary_set_fd(dict, "file", STDOUT_FILENO);
@@ -107,7 +107,7 @@ printlimits:
 			fprintf(stderr, "Could not print resource limits: %d: %s\n", err, xpc_strerror(err));
 		}
 
-		if (__isPlatformVersionAtLeast(2, 15, 0, 0)) {
+		if (__builtin_available(iOS 15, *)) {
 			launchctl_print_shmem(reply, addr, sz, stdout);
 			vm_deallocate(mach_task_self(), addr, sz);
 		}

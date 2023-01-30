@@ -122,7 +122,7 @@ launchctl_xpc_object_print(xpc_object_t in, const char *name, int level)
 void
 launchctl_setup_xpc_dict(xpc_object_t dict)
 {
-	if (__isPlatformVersionAtLeast(2, 15, 0, 0)) {
+	if (__builtin_available(iOS 15, *)) {
 		xpc_dictionary_set_uint64(dict, "type", 7);
 	} else {
 		xpc_dictionary_set_uint64(dict, "type", 1);
@@ -170,7 +170,7 @@ launchctl_setup_xpc_dict_for_service_name(char *servicetarget, xpc_object_t dict
 			if (name != NULL) {
 				*name = split[1];
 			}
-			if (__isPlatformVersionAtLeast(2, 16, 0, 0)) {
+			if (__builtin_available(iOS 16, *)) {
 				if (xpc_user_sessions_enabled() && launchctl_test_xpc_send(1, handle, split[1]) == false) {
 					uint64_t fguid = xpc_user_sessions_get_foreground_uid(0);
 					if (launchctl_test_xpc_send(2, fguid, split[1])) {
@@ -185,7 +185,7 @@ launchctl_setup_xpc_dict_for_service_name(char *servicetarget, xpc_object_t dict
 	} else if (strcmp(split[0], "user") == 0) {
 		xpc_dictionary_set_uint64(dict, "type", 2);
 		if (split[1] != NULL && strcmp(split[1], "foreground") == 0) {
-			if (__isPlatformVersionAtLeast(2, 16, 0, 0)) {
+			if (__builtin_available(iOS 16, *)) {
 				if (xpc_user_sessions_enabled() == 0) {
 					fprintf(stderr, "user/foreground/ specifier is not supported on this platform\n");
 					return ENOTSUP;

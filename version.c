@@ -44,7 +44,7 @@ version_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 	vm_address_t addr = 0;
 	vm_size_t sz = 0x100000;
 
-	if (__isPlatformVersionAtLeast(2, 15, 0, 0)) {
+	if (__builtin_available(iOS 15, *)) {
 		addr = launchctl_create_shmem(dict, sz);
 	} else {
 		xpc_dictionary_set_fd(dict, "fd", STDOUT_FILENO);
@@ -63,7 +63,7 @@ version_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 		fprintf(stderr, "Could not print variant: %d: %s\n", ret, xpc_strerror(ret));
 	}
 
-	if (__isPlatformVersionAtLeast(2, 15, 0, 0))
+	if (__builtin_available(iOS 15, *))
 		launchctl_print_shmem(reply, addr, sz, stdout);
 
 	if (addr != 0)

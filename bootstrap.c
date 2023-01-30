@@ -62,7 +62,7 @@ bootstrap_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **appl
 	if (argc > 2) {
 		paths = launchctl_parse_load_unload(0, argc - 2, argv + 2);
 		xpc_dictionary_set_value(dict, "paths", paths);
-		if (__isPlatformVersionAtLeast(2, 16, 0, 0)) {
+		if (__builtin_available(iOS 16, *)) {
 			if (xpc_dictionary_get_uint64(dict, "type") == 1 && xpc_user_sessions_enabled() != 0) {
 				xpc_array_apply(paths, ^bool (size_t index, xpc_object_t val) {
 						xpc_object_t plist = launchctl_xpc_from_plist(xpc_string_get_string_ptr(val));
@@ -129,7 +129,7 @@ bootout_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 	if (argc > 2 && name == NULL) {
 		paths = launchctl_parse_load_unload(0, argc - 2, argv + 2);
 		xpc_dictionary_set_value(dict, "paths", paths);
-		if (__isPlatformVersionAtLeast(2, 16, 0, 0)) {
+		if (__builtin_available(iOS 16, *)) {
 			if (xpc_dictionary_get_uint64(dict, "type") == 1 && xpc_user_sessions_enabled() != 0) {
 				xpc_array_apply(paths, ^bool (size_t index, xpc_object_t val) {
 						xpc_object_t plist = launchctl_xpc_from_plist(xpc_string_get_string_ptr(val));
@@ -147,7 +147,7 @@ bootout_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 		}
 	}
 
-	if (__isPlatformVersionAtLeast(2, 15, 0, 0))
+	if (__builtin_available(iOS 15, *))
 		xpc_dictionary_set_bool(dict, "no-einprogress", true);
 
 	ret = launchctl_send_xpc_to_launchd(XPC_ROUTINE_UNLOAD, dict, &reply);

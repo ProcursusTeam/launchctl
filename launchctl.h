@@ -123,7 +123,4 @@ xpc_object_t launchctl_parse_load_unload(unsigned int domain, int count, char **
 vm_address_t launchctl_create_shmem(xpc_object_t, vm_size_t);
 void launchctl_print_shmem(xpc_object_t dict, vm_address_t addr, vm_size_t sz, FILE *outfd);
 xpc_object_t launchctl_xpc_from_plist(const char *path);
-
-// This is part of compiler-rt, I just don't want to use objc
-int32_t __isPlatformVersionAtLeast(uint32_t Platform, uint32_t Major, uint32_t Minor, uint32_t Subminor);
 #endif

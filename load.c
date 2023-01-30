@@ -99,7 +99,7 @@ load_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 		xpc_dictionary_set_bool(dict, "enable", wflag);
 	} else {
 		xpc_dictionary_set_bool(dict, "disable", wflag);
-		if (__isPlatformVersionAtLeast(2, 15, 0, 0)) {
+		if (__builtin_available(iOS 15, *)) {
 			xpc_dictionary_set_bool(dict, "no-einprogress", true);
 		}
 	}
