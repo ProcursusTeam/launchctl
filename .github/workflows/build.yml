@@ -23,6 +23,15 @@ on:
 jobs:
   build:
     name: Build
+    strategy:
+      matrix:
+        version:
+          - 12.0
+          - 13.0
+          - 14.0
+          - 15.0
+          - 16.0
+
     runs-on: macos-12
     steps:
       - name: Checkout
@@ -34,8 +43,8 @@ jobs:
         run: |
           echo "CC=xcrun -sdk iphoneos cc -arch arm64" >> $GITHUB_ENV
           echo "STRIP=xcrun -sdk iphoneos strip" >> $GITHUB_ENV
-          echo "CFLAGS=-I${HOME}/include -Os -flto=thin -Wextra -Wno-unused-parameter -miphoneos-version-min=12.0" >> $GITHUB_ENV
-          echo "LDFLAGS=-Os -flto=thin -miphoneos-version-min=12.0" >> $GITHUB_ENV
+          echo "CFLAGS=-I${HOME}/include -Os -flto=thin -Wextra -Wno-unused-parameter -miphoneos-version-min=${{ matrix.version }}" >> $GITHUB_ENV
+          echo "LDFLAGS=-Os -flto=thin -miphoneos-version-min=${{ matrix.version }}" >> $GITHUB_ENV
           gh release download -R ProcursusTeam/ldid -p ldid_macosx_x86_64
           install -m755 ldid_macosx_x86_64 ldid
           echo "${PWD}" >> $GITHUB_PATH
@@ -51,8 +60,8 @@ jobs:
       - name: Upload build artifact
         uses: actions/upload-artifact@v3
         with:
-          name: launchctl
-          path: launchctl
+          name: launchctl.${{ matrix.version }}
+          path: launchctl.${{ matrix.version }}
 
       - name: Upload to release
         uses: softprops/action-gh-release@v1
@@ -60,4 +69,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: launchctl
+          files: launchctl.${{ matrix.version }}
