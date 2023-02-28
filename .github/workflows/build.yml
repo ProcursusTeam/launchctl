@@ -55,7 +55,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build
-        run: make -j$(sysctl -n hw.ncpu)
+        run: |
+          make -j$(sysctl -n hw.ncpu)
+          cp -a launchctl launchctl.${{ matrix.version }}
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v3
