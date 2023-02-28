@@ -45,8 +45,10 @@ print_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 	int ret = EUSAGE;
 	xpc_object_t reply;
 	const char *name = NULL;
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 150000
 	vm_address_t addr;
 	vm_size_t sz = 0x100000;
+#endif
 
 	xpc_object_t dict = xpc_dictionary_create(NULL, NULL, 0);
 	*msg = dict;
@@ -54,21 +56,22 @@ print_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 	if ((ret = launchctl_setup_xpc_dict_for_service_name(argv[1], dict, &name)) != 0)
 		return ret;
 
-	if (__builtin_available(iOS 15, *)) {
-		addr = launchctl_create_shmem(dict, sz);
-	} else {
-		xpc_dictionary_set_fd(dict, "fd", STDOUT_FILENO);
-	}
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 150000
+	addr = launchctl_create_shmem(dict, sz);
+#else
+	xpc_dictionary_set_fd(dict, "fd", STDOUT_FILENO);
+#endif
+
 	if (name != NULL)
 		ret = launchctl_send_xpc_to_launchd(XPC_ROUTINE_PRINT_SERVICE, dict, &reply);
 	else
 		ret = launchctl_send_xpc_to_launchd(XPC_ROUTINE_PRINT, dict, &reply);
 
 	if (ret == 0) {
-		if (__builtin_available(iOS 15, *)) {
-			launchctl_print_shmem(reply, addr, sz, stdout);
-			vm_deallocate(mach_task_self(), addr, sz);
-		}
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 150000
+		launchctl_print_shmem(reply, addr, sz, stdout);
+		vm_deallocate(mach_task_self(), addr, sz);
+#endif
 	} else if (ret < ENODOMAIN) {
 		if (ret == EINVAL)
 			fprintf(stderr, "Bad request.\n");
@@ -84,8 +87,10 @@ print_cache_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **ap
 {
 	int ret;
 	xpc_object_t reply;
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 150000
 	vm_address_t addr;
 	vm_size_t sz = 0x1400000;
+#endif
 
 	xpc_object_t dict = xpc_dictionary_create(NULL, NULL, 0);
 	*msg = dict;
@@ -93,20 +98,20 @@ print_cache_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **ap
 	xpc_dictionary_set_uint64(dict, "type", 1);
 	xpc_dictionary_set_uint64(dict, "handle", 0);
 
-	if (__builtin_available(iOS 15, *)) {
-		addr = launchctl_create_shmem(dict, sz);
-	} else {
-		xpc_dictionary_set_fd(dict, "fd", STDOUT_FILENO);
-	}
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 150000
+	addr = launchctl_create_shmem(dict, sz);
+#else
+	xpc_dictionary_set_fd(dict, "fd", STDOUT_FILENO);
+#endif
 	xpc_dictionary_set_bool(dict, "cache", true);
 
 	ret = launchctl_send_xpc_to_launchd(XPC_ROUTINE_PRINT, dict, &reply);
 
 	if (ret == 0) {
-		if (__builtin_available(iOS 15, *)) {
-			launchctl_print_shmem(reply, addr, sz, stdout);
-			vm_deallocate(mach_task_self(), addr, sz);
-		}
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 150000
+		launchctl_print_shmem(reply, addr, sz, stdout);
+		vm_deallocate(mach_task_self(), addr, sz);
+#endif
 	} else if (ret < ENODOMAIN) {
 		if (ret == EINVAL)
 			fprintf(stderr, "Bad request.\n");
@@ -122,8 +127,10 @@ print_disabled_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char *
 {
 	int ret;
 	xpc_object_t reply;
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 150000
 	vm_address_t addr;
 	vm_size_t sz = 0x100000;
+#endif
 
 	xpc_object_t dict = xpc_dictionary_create(NULL, NULL, 0);
 	*msg = dict;
@@ -131,20 +138,20 @@ print_disabled_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char *
 	xpc_dictionary_set_uint64(dict, "type", 1);
 	xpc_dictionary_set_uint64(dict, "handle", 0);
 
-	if (__builtin_available(iOS 15, *)) {
-		addr = launchctl_create_shmem(dict, sz);
-	} else {
-		xpc_dictionary_set_fd(dict, "fd", STDOUT_FILENO);
-	}
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 150000
+	addr = launchctl_create_shmem(dict, sz);
+#else
+	xpc_dictionary_set_fd(dict, "fd", STDOUT_FILENO);
+#endif
 	xpc_dictionary_set_bool(dict, "disabled", true);
 
 	ret = launchctl_send_xpc_to_launchd(XPC_ROUTINE_PRINT, dict, &reply);
 
 	if (ret == 0) {
-		if (__builtin_available(iOS 15, *)) {
-			launchctl_print_shmem(reply, addr, sz, stdout);
-			vm_deallocate(mach_task_self(), addr, sz);
-		}
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 150000
+		launchctl_print_shmem(reply, addr, sz, stdout);
+		vm_deallocate(mach_task_self(), addr, sz);
+#endif
 	} else if (ret < ENODOMAIN) {
 		if (ret == EINVAL)
 			fprintf(stderr, "Bad request.\n");
@@ -160,8 +167,10 @@ dumpstate_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **appl
 {
 	int ret;
 	xpc_object_t reply;
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 150000
 	vm_address_t addr;
 	vm_size_t sz = 0x1400000;
+#endif
 
 	xpc_object_t dict = xpc_dictionary_create(NULL, NULL, 0);
 	*msg = dict;
@@ -169,19 +178,19 @@ dumpstate_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **appl
 	xpc_dictionary_set_uint64(dict, "type", 1);
 	xpc_dictionary_set_uint64(dict, "handle", 0);
 
-	if (__builtin_available(iOS 15, *)) {
-		addr = launchctl_create_shmem(dict, sz);
-	} else {
-		xpc_dictionary_set_fd(dict, "fd", STDOUT_FILENO);
-	}
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 150000
+	addr = launchctl_create_shmem(dict, sz);
+#else
+	xpc_dictionary_set_fd(dict, "fd", STDOUT_FILENO);
+#endif
 
 	ret = launchctl_send_xpc_to_launchd(XPC_ROUTINE_DUMPSTATE, dict, &reply);
 
 	if (ret == 0) {
-		if (__builtin_available(iOS 15, *)) {
-			launchctl_print_shmem(reply, addr, sz, stdout);
-			vm_deallocate(mach_task_self(), addr, sz);
-		}
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 150000
+		launchctl_print_shmem(reply, addr, sz, stdout);
+		vm_deallocate(mach_task_self(), addr, sz);
+#endif
 	} else if (ret == EBUSY) {
 		fprintf(stderr, "State-dump already in progress; please try again later.\n");
 	} else if (ret == ENOTSUP) {

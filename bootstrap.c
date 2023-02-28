@@ -62,22 +62,22 @@ bootstrap_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **appl
 	if (argc > 2) {
 		paths = launchctl_parse_load_unload(0, argc - 2, argv + 2);
 		xpc_dictionary_set_value(dict, "paths", paths);
-		if (__builtin_available(iOS 16, *)) {
-			if (xpc_dictionary_get_uint64(dict, "type") == 1 && xpc_user_sessions_enabled() != 0) {
-				xpc_array_apply(paths, ^bool (size_t index, xpc_object_t val) {
-						xpc_object_t plist = launchctl_xpc_from_plist(xpc_string_get_string_ptr(val));
-						if (plist != NULL && xpc_get_type(plist) == XPC_TYPE_DICTIONARY) {
-							if (xpc_dictionary_get_value(plist, "LimitLoadToSessionType") != 0) {
-								xpc_release(plist);
-								return true;
-							}
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 160000
+		if (xpc_dictionary_get_uint64(dict, "type") == 1 && xpc_user_sessions_enabled() != 0) {
+			xpc_array_apply(paths, ^bool (size_t index, xpc_object_t val) {
+					xpc_object_t plist = launchctl_xpc_from_plist(xpc_string_get_string_ptr(val));
+					if (plist != NULL && xpc_get_type(plist) == XPC_TYPE_DICTIONARY) {
+						if (xpc_dictionary_get_value(plist, "LimitLoadToSessionType") != 0) {
+							xpc_release(plist);
+							return true;
 						}
-						xpc_dictionary_set_uint64(dict, "type", 2);
-						xpc_dictionary_set_uint64(dict, "handle", xpc_user_sessions_get_foreground_uid(0));
-						return false;
-				});
-			}
+					}
+					xpc_dictionary_set_uint64(dict, "type", 2);
+					xpc_dictionary_set_uint64(dict, "handle", xpc_user_sessions_get_foreground_uid(0));
+					return false;
+			});
 		}
+#endif
 	}
 	ret = launchctl_send_xpc_to_launchd(XPC_ROUTINE_LOAD, dict, &reply);
 	if (ret != ENODOMAIN) {
@@ -129,26 +129,27 @@ bootout_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 	if (argc > 2 && name == NULL) {
 		paths = launchctl_parse_load_unload(0, argc - 2, argv + 2);
 		xpc_dictionary_set_value(dict, "paths", paths);
-		if (__builtin_available(iOS 16, *)) {
-			if (xpc_dictionary_get_uint64(dict, "type") == 1 && xpc_user_sessions_enabled() != 0) {
-				xpc_array_apply(paths, ^bool (size_t index, xpc_object_t val) {
-						xpc_object_t plist = launchctl_xpc_from_plist(xpc_string_get_string_ptr(val));
-						if (plist != NULL && xpc_get_type(plist) == XPC_TYPE_DICTIONARY) {
-							if (xpc_dictionary_get_value(plist, "LimitLoadToSessionType") != 0) {
-								xpc_release(plist);
-								return true;
-							}
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 160000
+		if (xpc_dictionary_get_uint64(dict, "type") == 1 && xpc_user_sessions_enabled() != 0) {
+			xpc_array_apply(paths, ^bool (size_t index, xpc_object_t val) {
+					xpc_object_t plist = launchctl_xpc_from_plist(xpc_string_get_string_ptr(val));
+					if (plist != NULL && xpc_get_type(plist) == XPC_TYPE_DICTIONARY) {
+						if (xpc_dictionary_get_value(plist, "LimitLoadToSessionType") != 0) {
+							xpc_release(plist);
+							return true;
 						}
-						xpc_dictionary_set_uint64(dict, "type", 2);
-						xpc_dictionary_set_uint64(dict, "handle", xpc_user_sessions_get_foreground_uid(0));
-						return false;
-				});
-			}
+					}
+					xpc_dictionary_set_uint64(dict, "type", 2);
+					xpc_dictionary_set_uint64(dict, "handle", xpc_user_sessions_get_foreground_uid(0));
+					return false;
+			});
 		}
+#endif
 	}
 
-	if (__builtin_available(iOS 15, *))
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 150000
 		xpc_dictionary_set_bool(dict, "no-einprogress", true);
+#endif
 
 	ret = launchctl_send_xpc_to_launchd(XPC_ROUTINE_UNLOAD, dict, &reply);
 	if (ret != ENODOMAIN) {

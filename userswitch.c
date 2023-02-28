@@ -41,14 +41,15 @@ userswitch_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **app
 		return EUSAGE;
 
 	int ret = ENOTSUP;
+
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 150000
 	long olduid = 0, newuid = 0;
 
 	olduid = strtol(argv[1], NULL, 0);
 	newuid = strtol(argv[1], NULL, 0);
 
-	if (__builtin_available(iOS 15, *)) {
-		ret = launch_active_user_switch(olduid, newuid);
-	}
+	ret = launch_active_user_switch(olduid, newuid);
+#endif
 
 	if (ret != 0) {
 		fprintf(stderr, "Failed to perform a user switch: %d: %s\n", ret, xpc_strerror(ret));
