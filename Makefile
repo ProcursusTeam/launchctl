@@ -10,9 +10,6 @@ CFLAGS  += -O0 -g -fsanitize=address,undefined -fno-omit-frame-pointer
 LDFLAGS += -O0 -g -fsanitize=address,undefined -fno-omit-frame-pointer
 endif
 
-CFLAGS  += -fobjc-arc
-LDFLAGS += -fobjc-arc
-
 all: launchctl
 
 launchctl: $(SRC:.c=.o) Info.plist launchctl.xml
