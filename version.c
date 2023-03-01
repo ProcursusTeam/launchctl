@@ -41,11 +41,10 @@ version_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 	xpc_object_t dict = xpc_dictionary_create(NULL, NULL, 0);
 	*msg = dict;
 	launchctl_setup_xpc_dict(dict);
+	vm_address_t addr = 0;
+	vm_size_t sz = 0x100000;
 
 	if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)) {
-		vm_address_t addr = 0;
-		vm_size_t sz = 0x100000;
-
 		addr = launchctl_create_shmem(dict, sz);
 	} else {
 		xpc_dictionary_set_fd(dict, "fd", STDOUT_FILENO);

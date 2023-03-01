@@ -83,10 +83,8 @@ limit_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 
 	xpc_object_t dict, reply;
 	int err = 0;
-	if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)) {
-		vm_address_t addr;
-		vm_size_t sz = 0x100000;
-	}
+	vm_address_t addr;
+	vm_size_t sz = 0x100000;
 	long long softlimit, hardlimit, idx;
 
 	dict = xpc_dictionary_create(NULL, NULL, 0);

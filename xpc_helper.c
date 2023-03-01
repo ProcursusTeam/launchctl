@@ -61,10 +61,12 @@ launchctl_send_xpc_to_launchd(uint64_t routine, xpc_object_t msg, xpc_object_t *
 	// dirty bit shift will let us get the correct subsystem.
 	xpc_dictionary_set_uint64(msg, "subsystem", routine >> 8);
 	xpc_dictionary_set_uint64(msg, "routine", routine);
+	int ret = 0;
+
 	if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)) {
-		int ret = _xpc_pipe_interface_routine(bootstrap_pipe, 0, msg, reply, 0);
+		ret = _xpc_pipe_interface_routine(bootstrap_pipe, 0, msg, reply, 0);
 	} else {
-		int ret = xpc_pipe_routine(bootstrap_pipe, msg, reply);
+		ret = xpc_pipe_routine(bootstrap_pipe, msg, reply);
 	}
 	if (ret == 0 && (ret = xpc_dictionary_get_int64(*reply, "error")) == 0)
 		return 0;
