@@ -99,9 +99,9 @@ load_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 		xpc_dictionary_set_bool(dict, "enable", wflag);
 	} else {
 		xpc_dictionary_set_bool(dict, "disable", wflag);
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 150000
-		xpc_dictionary_set_bool(dict, "no-einprogress", true);
-#endif
+		if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)) {
+			xpc_dictionary_set_bool(dict, "no-einprogress", true);
+		}
 	}
 	xpc_dictionary_set_bool(dict, "legacy-load", true);
 	if (force)

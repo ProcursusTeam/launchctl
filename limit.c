@@ -83,10 +83,10 @@ limit_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 
 	xpc_object_t dict, reply;
 	int err = 0;
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 150000
-	vm_address_t addr;
-	vm_size_t sz = 0x100000;
-#endif
+	if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)) {
+		vm_address_t addr;
+		vm_size_t sz = 0x100000;
+	}
 	long long softlimit, hardlimit, idx;
 
 	dict = xpc_dictionary_create(NULL, NULL, 0);
@@ -98,21 +98,21 @@ limit_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 printlimits:
 		xpc_dictionary_set_bool(dict, "print", true);
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 150000
-		addr = launchctl_create_shmem(dict, sz);
-#else
-		xpc_dictionary_set_fd(dict, "file", STDOUT_FILENO);
-#endif
+		if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)) {
+			addr = launchctl_create_shmem(dict, sz);
+		} else {
+			xpc_dictionary_set_fd(dict, "file", STDOUT_FILENO);
+		}
 
 		err = launchctl_send_xpc_to_launchd(XPC_ROUTINE_LIMIT, dict, &reply);
 		if (err != 0) {
 			fprintf(stderr, "Could not print resource limits: %d: %s\n", err, xpc_strerror(err));
 		}
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 150000
-		launchctl_print_shmem(reply, addr, sz, stdout);
-		vm_deallocate(mach_task_self(), addr, sz);
-#endif
+		if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)) {
+			launchctl_print_shmem(reply, addr, sz, stdout);
+			vm_deallocate(mach_task_self(), addr, sz);
+		}
 	} else {
 		if ((idx = limit_index(argv[1])) == -1) {
 			fprintf(stderr, "%s is not a valid limit name.\n", argv[1]);

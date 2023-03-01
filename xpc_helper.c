@@ -61,11 +61,11 @@ launchctl_send_xpc_to_launchd(uint64_t routine, xpc_object_t msg, xpc_object_t *
 	// dirty bit shift will let us get the correct subsystem.
 	xpc_dictionary_set_uint64(msg, "subsystem", routine >> 8);
 	xpc_dictionary_set_uint64(msg, "routine", routine);
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 150000
-	int ret = _xpc_pipe_interface_routine(bootstrap_pipe, 0, msg, reply, 0);
-#else
-	int ret = xpc_pipe_routine(bootstrap_pipe, msg, reply);
-#endif
+	if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)) {
+		int ret = _xpc_pipe_interface_routine(bootstrap_pipe, 0, msg, reply, 0);
+	} else {
+		int ret = xpc_pipe_routine(bootstrap_pipe, msg, reply);
+	}
 	if (ret == 0 && (ret = xpc_dictionary_get_int64(*reply, "error")) == 0)
 		return 0;
 
@@ -122,11 +122,11 @@ launchctl_xpc_object_print(xpc_object_t in, const char *name, int level)
 void
 launchctl_setup_xpc_dict(xpc_object_t dict)
 {
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 150000
-	xpc_dictionary_set_uint64(dict, "type", 7);
-#else
-	xpc_dictionary_set_uint64(dict, "type", 1);
-#endif
+	if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)) {
+		xpc_dictionary_set_uint64(dict, "type", 7);
+	} else {
+		xpc_dictionary_set_uint64(dict, "type", 1);
+	}
 	xpc_dictionary_set_uint64(dict, "handle", 0);
 	return;
 }
@@ -170,28 +170,28 @@ launchctl_setup_xpc_dict_for_service_name(char *servicetarget, xpc_object_t dict
 			if (name != NULL) {
 				*name = split[1];
 			}
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 160000
-			if (xpc_user_sessions_enabled() && launchctl_test_xpc_send(1, handle, split[1]) == false) {
-				uint64_t fguid = xpc_user_sessions_get_foreground_uid(0);
-				if (launchctl_test_xpc_send(2, fguid, split[1])) {
-					fprintf(stderr, "Warning: Please switch to user/foreground/%s service identifier\n", split[1]);
-					xpc_dictionary_set_uint64(dict, "type", 2);
-					xpc_dictionary_set_uint64(dict, "handle", xpc_user_sessions_get_foreground_uid(0));
+			if (__builtin_available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)) {
+				if (xpc_user_sessions_enabled() && launchctl_test_xpc_send(1, handle, split[1]) == false) {
+					uint64_t fguid = xpc_user_sessions_get_foreground_uid(0);
+					if (launchctl_test_xpc_send(2, fguid, split[1])) {
+						fprintf(stderr, "Warning: Please switch to user/foreground/%s service identifier\n", split[1]);
+						xpc_dictionary_set_uint64(dict, "type", 2);
+						xpc_dictionary_set_uint64(dict, "handle", xpc_user_sessions_get_foreground_uid(0));
+					}
 				}
 			}
-#endif
 		}
 		return 0;
 	} else if (strcmp(split[0], "user") == 0) {
 		xpc_dictionary_set_uint64(dict, "type", 2);
 		if (split[1] != NULL && strcmp(split[1], "foreground") == 0) {
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 160000
-			if (xpc_user_sessions_enabled() == 0) {
-				fprintf(stderr, "user/foreground/ specifier is not supported on this platform\n");
-				return ENOTSUP;
+			if (__builtin_available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)) {
+				if (xpc_user_sessions_enabled() == 0) {
+					fprintf(stderr, "user/foreground/ specifier is not supported on this platform\n");
+					return ENOTSUP;
+				}
+				handle = xpc_user_sessions_get_foreground_uid(0);
 			}
-			handle = xpc_user_sessions_get_foreground_uid(0);
-#endif
 		}
 	} else if (strcmp(split[0], "session") == 0) {
 		xpc_dictionary_set_uint64(dict, "type", 4);
