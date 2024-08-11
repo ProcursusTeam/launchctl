@@ -72,7 +72,7 @@ static const struct {
 	{ "print-cache", "Prints information about the service cache.", NULL, print_cache_cmd },
 	{ "print-disabled", "Prints which services are disabled.", NULL, print_disabled_cmd },
 	{ "plist", "Prints a property list embedded in a binary (targets the Info.plist by default).", "[segment,section] <path>", plist_cmd },
-	{ "procinfo", "Prints port information about a process.", "<pid>", todo_cmd },
+	{ "procinfo", "Prints port information about a process.", "<pid>", procinfo_cmd },
 	{ "hostinfo", "Prints port information about the host.", NULL, todo_cmd },
 	{ "resolveport", "Resolves a port name from a process to an endpoint in launchd.", "<owner-pid> <port-name>", todo_cmd },
 	{ "limit", "Reads or modifies launchd's resource limits.", "[<limit-name> [<both-limits> | <soft-limit> <hard-limit>]", limit_cmd },
