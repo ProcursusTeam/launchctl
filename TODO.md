@@ -2,6 +2,7 @@
 1. [x] bootout
 1. [x] enable
 1. [x] disable
+1. [x] uncache
 1. [x] kickstart
 1. [x] attach
 1. [ ] debug
