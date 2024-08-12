@@ -41,6 +41,7 @@ typedef int cmd_main(xpc_object_t *, int, char **, char **, char **);
 cmd_main help_cmd;
 cmd_main config_cmd;
 cmd_main submit_cmd;
+cmd_main uncache_cmd;
 cmd_main todo_cmd; // Placeholder
 
 // version.c

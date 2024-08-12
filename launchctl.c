@@ -62,6 +62,7 @@ static const struct {
 	{ "bootout", "Tears down a domain or removes a service from a domain.", "<domain-target> [service-path1, service-path2, ...] | <service-target>", bootout_cmd },
 	{ "enable", "Enables an existing service.", "<service-target>", enable_cmd },
 	{ "disable", "Disables an existing service.", "<service-target>", enable_cmd },
+	{ "uncache", "Removes the specified service name from the service cache.", "<service-name>", uncache_cmd },
 	{ "kickstart", "Forces an existing service to start.", "[-k] [-p] <service-target>", kickstart_cmd },
 	{ "attach", "Attach the system's debugger to a service.", "[-k] [-s] [-x] <service-target>", attach_cmd },
 	{ "debug", "Configures the next invocation of a service for debugging.", "<service-target> [--program <program-path>] [--start-suspended] [oc-stack-logging] [--malloc-nano-allocator] [--debug-libraries] [--NSZombie] [--32] [--stdin [path]] [--stdout [path]] [--stderr [path]] [--environment VARIABLE0=value0 VARIABLE1=value1 ...] -- [argv0 argv1 ...]", todo_cmd },
@@ -217,6 +218,12 @@ int
 submit_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 {
 	return EDEPRECATED;
+}
+
+int
+uncache_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
+{
+	return E2BIMPL;
 }
 
 int
