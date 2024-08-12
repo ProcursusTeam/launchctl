@@ -120,6 +120,7 @@ cmd_main dumpjpcategory_cmd;
 
 // procinfo.c
 cmd_main procinfo_cmd;
+cmd_main hostinfo_cmd;
 
 void launchctl_xpc_object_print(xpc_object_t, const char *name, int level);
 int launchctl_send_xpc_to_launchd(uint64_t routine, xpc_object_t msg, xpc_object_t *reply);

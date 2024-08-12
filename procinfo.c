@@ -44,7 +44,8 @@
 #include "launchctl.h"
 
 /* #include <mach/port_descriptions.h> */
-const char *mach_task_special_port_description(int offset);
+const char *mach_host_special_port_description(int port);
+const char *mach_task_special_port_description(int port);
 /* END <mach/mach/port_descriptions.h> */
 
 #include <sys/proc_info.h>
@@ -598,5 +599,30 @@ procinfo_launchd_info: {}
 			fprintf(stderr, "Could not print service: %d: %s\n", retval, xpc_strerror(retval));
 	}
     printf("\n");
+    return 0;
+}
+
+int
+hostinfo_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple) {
+    for (int i = 0; i < HOST_MAX_SPECIAL_PORT; i++) {
+        mach_port_t port;
+        int retval = host_get_special_port(mach_host_self(), HOST_LOCAL_NODE, i, &port);
+        if (retval || !MACH_PORT_VALID(port)) continue;
+        char* type = get_port_type(port);
+        printf("host-%s port = 0x%x %s\n", mach_host_special_port_description(i), port, type);
+        free(type);
+    }
+
+    exception_mask_t masks[EXC_TYPES_COUNT];
+    mach_msg_type_number_t masksCnt;
+    exception_handler_t old_handlers[EXC_TYPES_COUNT];
+    exception_behavior_t old_behaviors[EXC_TYPES_COUNT];
+    thread_state_flavor_t old_flavors[EXC_TYPES_COUNT];
+    kern_return_t kr = host_get_exception_ports(mach_host_self(), 0x3ffe, masks, &masksCnt, old_handlers, old_behaviors, old_flavors);
+    if (kr) {
+        fprintf(stderr, "host_get_exception_ports(): 0x%x\n", kr);
+    } else {
+        print_exception_port_info(0, masks, masksCnt, old_handlers);
+    }
     return 0;
 }
