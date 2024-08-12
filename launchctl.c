@@ -80,6 +80,7 @@ static const struct {
 	{ "examine", "Runs the specified analysis tool against launchd in a non-reentrant manner.", "[<tool> [arg0, arg1, ... , @PID, ...]]", examine_cmd },
 	{ "config", "Modifies persistent configuration parameters for launchd domains.", NULL, config_cmd },
 	{ "dumpstate", "Dumps launchd state to stdout.", NULL, dumpstate_cmd },
+	{ "dumpjpcategory", "Dumps the jetsam properties category for all services.", NULL, dumpjpcategory_cmd },
 	{ "reboot", "Initiates a system reboot of the specified type.", "[system|halt|obliterate|userspace] [-s]", reboot_cmd },
 	{ "userswitch", "Initiates a user switch.", "<old-uid> <new-uid>", userswitch_cmd },
 	{ "load", "Bootstraps a service or directory of services.", "<service-path, service-path2, ...>", load_cmd },
