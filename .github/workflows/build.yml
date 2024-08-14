@@ -39,9 +39,13 @@ jobs:
           gh release download -R ProcursusTeam/ldid -p ldid_macosx_x86_64
           install -m755 ldid_macosx_x86_64 ldid
           echo "${PWD}" >> $GITHUB_PATH
-          mkdir -p ${HOME}/include
+          mkdir -p ${HOME}/include/sys
           ln -s $(xcrun -sdk macosx --show-sdk-path)/usr/include/xpc ${HOME}/include/xpc
           ln -s $(xcrun -sdk macosx --show-sdk-path)/usr/include/launch.h ${HOME}/include/launch.h
+          ln -s $(xcrun -sdk macosx --show-sdk-path)/usr/include/net ${HOME}/include/net
+          ln -s $(xcrun -sdk macosx --show-sdk-path)/usr/include/libproc.h ${HOME}/include/libproc.h
+          ln -s $(xcrun -sdk macosx --show-sdk-path)/usr/include/sys/proc_info.h ${HOME}/include/sys/proc_info.h
+          ln -s $(xcrun -sdk macosx --show-sdk-path)/usr/include/sys/kern_control.h ${HOME}/include/sys/kern_control.h
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
