@@ -34,26 +34,24 @@
 
 #include <errno.h>
 #include <inttypes.h>
+#include <mach/mach.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sysdir.h>
 #include <unistd.h>
-
-#include <mach/mach.h>
-
 #include <xpc/xpc.h>
-#include "xpc_private.h"
-
-#include "os_alloc_once.h"
 
 #include "launchctl.h"
+#include "os_alloc_once.h"
+#include "xpc_private.h"
 
 int
 launchctl_send_xpc_to_launchd(uint64_t routine, xpc_object_t msg, xpc_object_t *reply)
 {
-	xpc_object_t bootstrap_pipe = ((struct xpc_global_data *)_os_alloc_once_table[OS_ALLOC_ONCE_KEY_LIBXPC].ptr)->xpc_bootstrap_pipe;
+	xpc_object_t bootstrap_pipe =
+	    ((struct xpc_global_data *)_os_alloc_once_table[OS_ALLOC_ONCE_KEY_LIBXPC].ptr)->xpc_bootstrap_pipe;
 
 	// Routines that act on a specific service are in the subsystem 2
 	// but that require a domain are in the subsystem 3 these are also
@@ -111,9 +109,9 @@ launchctl_xpc_object_print(xpc_object_t in, const char *name, int level)
 	} else if (t == XPC_TYPE_DICTIONARY) {
 		printf("{\n");
 		int __block blevel = level + 1;
-		(void)xpc_dictionary_apply(in, ^ bool (const char *key, xpc_object_t value) {
-				launchctl_xpc_object_print(value, key, blevel);
-				return true;
+		(void)xpc_dictionary_apply(in, ^bool(const char *key, xpc_object_t value) {
+		    launchctl_xpc_object_print(value, key, blevel);
+		    return true;
 		});
 		for (int i = 0; i < level; i++)
 			putchar('\t');
@@ -154,7 +152,7 @@ launchctl_setup_xpc_dict_for_service_name(char *servicetarget, xpc_object_t dict
 		*name = NULL;
 	}
 
-	const char *split[3] = {NULL, NULL, NULL};
+	const char *split[3] = { NULL, NULL, NULL };
 	for (int i = 0; i < 3; i++) {
 		char *var = strsep(&servicetarget, "/");
 		if (var == NULL)
@@ -173,12 +171,16 @@ launchctl_setup_xpc_dict_for_service_name(char *servicetarget, xpc_object_t dict
 				*name = split[1];
 			}
 			if (__builtin_available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)) {
-				if (xpc_user_sessions_enabled() && launchctl_test_xpc_send(1, handle, split[1]) == false) {
+				if (xpc_user_sessions_enabled() &&
+				    launchctl_test_xpc_send(1, handle, split[1]) == false) {
 					uint64_t fguid = xpc_user_sessions_get_foreground_uid(0);
 					if (launchctl_test_xpc_send(2, fguid, split[1])) {
-						fprintf(stderr, "Warning: Please switch to user/foreground/%s service identifier\n", split[1]);
+						fprintf(stderr,
+						    "Warning: Please switch to user/foreground/%s service identifier\n",
+						    split[1]);
 						xpc_dictionary_set_uint64(dict, "type", 2);
-						xpc_dictionary_set_uint64(dict, "handle", xpc_user_sessions_get_foreground_uid(0));
+						xpc_dictionary_set_uint64(dict, "handle",
+						    xpc_user_sessions_get_foreground_uid(0));
 					}
 				}
 			}
@@ -189,7 +191,8 @@ launchctl_setup_xpc_dict_for_service_name(char *servicetarget, xpc_object_t dict
 		if (split[1] != NULL && strcmp(split[1], "foreground") == 0) {
 			if (__builtin_available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)) {
 				if (xpc_user_sessions_enabled() == 0) {
-					fprintf(stderr, "user/foreground/ specifier is not supported on this platform\n");
+					fprintf(stderr,
+					    "user/foreground/ specifier is not supported on this platform\n");
 					return ENOTSUP;
 				}
 				handle = xpc_user_sessions_get_foreground_uid(0);
@@ -225,12 +228,13 @@ launchctl_parse_load_unload(unsigned int domain, int count, char **list)
 {
 	xpc_object_t ret;
 	ret = xpc_array_create(NULL, 0);
-	char pathbuf[PATH_MAX*2];
-	memset(pathbuf, 0, PATH_MAX*2);
+	char pathbuf[PATH_MAX * 2];
+	memset(pathbuf, 0, PATH_MAX * 2);
 
 	if (domain != 0) {
 		sysdir_search_path_enumeration_state state;
-		state = sysdir_start_search_path_enumeration(SYSDIR_DIRECTORY_LIBRARY, SYSDIR_DOMAIN_MASK_LOCAL | SYSDIR_DOMAIN_MASK_SYSTEM);
+		state = sysdir_start_search_path_enumeration(SYSDIR_DIRECTORY_LIBRARY,
+		    SYSDIR_DOMAIN_MASK_LOCAL | SYSDIR_DOMAIN_MASK_SYSTEM);
 		while ((state = sysdir_get_next_search_path_enumeration(state, pathbuf)) != 0) {
 			strcat(pathbuf, "/LaunchDaemons");
 			xpc_array_set_string(ret, XPC_ARRAY_APPEND, pathbuf);
@@ -259,7 +263,7 @@ launchctl_create_shmem(xpc_object_t dict, vm_size_t sz)
 	xpc_object_t shmem;
 
 	vm_allocate(mach_task_self(), &addr, sz, 0xf0000003);
-	shmem = xpc_shmem_create((void*)addr, sz);
+	shmem = xpc_shmem_create((void *)addr, sz);
 	xpc_dictionary_set_value(dict, "shmem", shmem);
 
 	return addr;
@@ -275,7 +279,7 @@ launchctl_print_shmem(xpc_object_t dict, vm_address_t addr, vm_size_t sz, FILE *
 		if (written == 0) {
 			fwrite("<eof>", 5, 1, outfd);
 		} else {
-			fwrite((void*)addr, 1, written, outfd);
+			fwrite((void *)addr, 1, written, outfd);
 		}
 		fflush(outfd);
 		return;
@@ -320,22 +324,22 @@ launchctl_print_domain_str(FILE *s, xpc_object_t msg)
 			fprintf(s, "system");
 			break;
 		case 2:
-			fprintf(s, "uid: %"PRIu64, handle);
+			fprintf(s, "uid: %" PRIu64, handle);
 			break;
 		case 3:
-			fprintf(s, "login: %"PRIu64, handle);
+			fprintf(s, "login: %" PRIu64, handle);
 			break;
 		case 4:
-			fprintf(s, "asid: %"PRIu64, handle);
+			fprintf(s, "asid: %" PRIu64, handle);
 			break;
 		case 5:
-			fprintf(s, "pid: %"PRIu64, handle);
+			fprintf(s, "pid: %" PRIu64, handle);
 			break;
 		case 7:
 			fprintf(s, "ports");
 			break;
 		case 8:
-			fprintf(s, "user gui: %"PRIu64, handle);
+			fprintf(s, "user gui: %" PRIu64, handle);
 			break;
 	}
 }

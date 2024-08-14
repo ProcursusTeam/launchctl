@@ -25,27 +25,24 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include <sys/stat.h>
 #include <sys/fcntl.h>
 #include <sys/mman.h>
+#include <sys/stat.h>
 
 #include <arpa/inet.h>
-
 #include <errno.h>
+#include <mach-o/fat.h>
+#include <mach-o/loader.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-
-#include <mach-o/loader.h>
-#include <mach-o/fat.h>
-
 #include <xpc/xpc.h>
-#include "xpc_private.h"
 
 #include "launchctl.h"
+#include "xpc_private.h"
 
 static xpc_object_t
 get_plist_from_section_32(struct mach_header *header, const char *segmentname, const char *sectionname)
@@ -56,12 +53,14 @@ get_plist_from_section_32(struct mach_header *header, const char *segmentname, c
 	uintptr_t loadCmdTable = (uintptr_t)header + sizeof(struct mach_header);
 
 	struct load_command *loadCmd = (struct load_command *)loadCmdTable;
-	for (uint32_t j = 0; j < loadCmdCount; j++, loadCmd = (struct load_command *)((uintptr_t)loadCmd + loadCmd->cmdsize)) {
+	for (uint32_t j = 0; j < loadCmdCount;
+	     j++, loadCmd = (struct load_command *)((uintptr_t)loadCmd + loadCmd->cmdsize)) {
 		if (loadCmd->cmd == LC_SEGMENT) {
 			struct segment_command *segmentCmd = (struct segment_command *)loadCmd;
 			if (strcmp(segmentCmd->segname, segmentname) == 0) {
 				uint32_t sectionCount = segmentCmd->nsects;
-				struct section *sectionTable = (struct section *)((uintptr_t)segmentCmd + sizeof(struct segment_command));
+				struct section *sectionTable = (struct section *)((uintptr_t)segmentCmd +
+				    sizeof(struct segment_command));
 
 				for (uint32_t k = 0; k < sectionCount; k++) {
 					struct section *section = &(sectionTable[k]);
@@ -91,12 +90,14 @@ get_plist_from_section_64(struct mach_header_64 *header, const char *segmentname
 	uintptr_t loadCmdTable = (uintptr_t)header + sizeof(struct mach_header_64);
 
 	struct load_command *loadCmd = (struct load_command *)loadCmdTable;
-	for (uint32_t j = 0; j < loadCmdCount; j++, loadCmd = (struct load_command *)((uintptr_t)loadCmd + loadCmd->cmdsize)) {
+	for (uint32_t j = 0; j < loadCmdCount;
+	     j++, loadCmd = (struct load_command *)((uintptr_t)loadCmd + loadCmd->cmdsize)) {
 		if (loadCmd->cmd == LC_SEGMENT_64) {
 			struct segment_command_64 *segmentCmd = (struct segment_command_64 *)loadCmd;
 			if (strcmp(segmentCmd->segname, segmentname) == 0) {
 				uint32_t sectionCount = segmentCmd->nsects;
-				struct section_64 *sectionTable = (struct section_64 *)((uintptr_t)segmentCmd + sizeof(struct segment_command_64));
+				struct section_64 *sectionTable = (struct section_64 *)((uintptr_t)segmentCmd +
+				    sizeof(struct segment_command_64));
 
 				for (uint32_t k = 0; k < sectionCount; k++) {
 					struct section_64 *section = &(sectionTable[k]);
@@ -170,7 +171,8 @@ plist_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 		goto end;
 	}
 
-	if (mappingSize < sizeof(uint32_t) && mappingSize < sizeof(struct mach_header) && mappingSize < sizeof(struct mach_header_64) && mappingSize < sizeof(struct fat_header)) {
+	if (mappingSize < sizeof(uint32_t) && mappingSize < sizeof(struct mach_header) &&
+	    mappingSize < sizeof(struct mach_header_64) && mappingSize < sizeof(struct fat_header)) {
 		fprintf(stderr, "File is not a valid Mach-O or fat file.\n");
 		goto end;
 	}
@@ -188,11 +190,13 @@ plist_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 		for (uint32_t i = 0; i < archCount; i++) {
 			void *archMapping = NULL;
 			if (magic == FAT_CIGAM) {
-				struct fat_arch *arch = (struct fat_arch *)((uintptr_t)archTable + (i * sizeof(struct fat_arch)));
+				struct fat_arch *arch = (struct fat_arch *)((uintptr_t)archTable +
+				    (i * sizeof(struct fat_arch)));
 				uint64_t archOffset = ntohl(arch->offset);
 				archMapping = (void *)((uintptr_t)mapping + archOffset);
 			} else if (magic == FAT_CIGAM_64) {
-				struct fat_arch_64 *arch = (struct fat_arch_64 *)((uintptr_t)archTable + (i * sizeof(struct fat_arch_64)));
+				struct fat_arch_64 *arch = (struct fat_arch_64 *)((uintptr_t)archTable +
+				    (i * sizeof(struct fat_arch_64)));
 				uint64_t archOffset = ntohl(arch->offset);
 				archMapping = (void *)((uintptr_t)mapping + archOffset);
 			}

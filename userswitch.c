@@ -28,11 +28,10 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <xpc/xpc.h>
-#include "xpc_private.h"
 
 #include "launchctl.h"
+#include "xpc_private.h"
 
 int
 userswitch_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)

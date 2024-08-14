@@ -36,11 +36,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include <xpc/xpc.h>
-#include "xpc_private.h"
 
 #include "launchctl.h"
+#include "xpc_private.h"
 
 int
 attach_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
@@ -95,10 +94,10 @@ attach_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 	if (pid == 0)
 		return EBADRESP;
 
-	printf("Attaching to pid: %"PRId64"\n", pid);
+	printf("Attaching to pid: %" PRId64 "\n", pid);
 
 	char pidstr[24];
-	snprintf(pidstr, sizeof(pidstr), "%"PRId64, pid);
+	snprintf(pidstr, sizeof(pidstr), "%" PRId64, pid);
 
 	char *lldbargv[7] = { "xcrun", "lldb", "process", "attach", "-p", pidstr, NULL };
 

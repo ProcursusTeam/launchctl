@@ -33,12 +33,10 @@
 #include <string.h>
 #include <strings.h>
 #include <sysdir.h>
-
 #include <xpc/xpc.h>
 
-#include "xpc_private.h"
-
 #include "launchctl.h"
+#include "xpc_private.h"
 
 int
 load_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
@@ -78,7 +76,8 @@ load_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 				}
 				break;
 			case 'S':
-				fprintf(stderr, "Session types are not supported on iOS. Ignoring session specifier: %s\n", optarg);
+				fprintf(stderr,
+				    "Session types are not supported on iOS. Ignoring session specifier: %s\n", optarg);
 				break;
 			default:
 				return EUSAGE;
@@ -111,16 +110,15 @@ load_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 		xpc_object_t errors = xpc_dictionary_get_value(reply, "errors");
 		if (errors != NULL && xpc_get_type(errors) == XPC_TYPE_DICTIONARY) {
 			(void)xpc_dictionary_apply(errors, ^bool(const char *key, xpc_object_t value) {
-					if (xpc_get_type(value) == XPC_TYPE_INT64) {
-						int64_t err = xpc_int64_get_value(value);
-						if (err == EEXIST || err == EALREADY)
-							fprintf(stderr, "%s: service already loaded\n", key);
-						else
-							fprintf(stderr, "%s: %s\n", key, xpc_strerror(err));
-					}
-					return true;
+			    if (xpc_get_type(value) == XPC_TYPE_INT64) {
+				    int64_t err = xpc_int64_get_value(value);
+				    if (err == EEXIST || err == EALREADY)
+					    fprintf(stderr, "%s: service already loaded\n", key);
+				    else
+					    fprintf(stderr, "%s: %s\n", key, xpc_strerror(err));
+			    }
+			    return true;
 			});
-
 		}
 	}
 

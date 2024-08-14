@@ -31,11 +31,10 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <unistd.h>
-
 #include <xpc/xpc.h>
-#include "xpc_private.h"
 
 #include "launchctl.h"
+#include "xpc_private.h"
 
 int
 kickstart_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
@@ -84,9 +83,9 @@ kickstart_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **appl
 		if (printpid) {
 			pid = xpc_dictionary_get_int64(reply, "pid");
 			if (isatty(STDOUT_FILENO)) {
-				printf("service spawned with pid: %"PRId64"\n", pid);
+				printf("service spawned with pid: %" PRId64 "\n", pid);
 			} else {
-				printf("%"PRId64"\n", pid);
+				printf("%" PRId64 "\n", pid);
 			}
 		}
 	} else if (err == EINVAL) {

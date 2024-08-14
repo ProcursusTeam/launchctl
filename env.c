@@ -29,12 +29,10 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-
 #include <xpc/xpc.h>
 
-#include "xpc_private.h"
-
 #include "launchctl.h"
+#include "xpc_private.h"
 
 int
 setenv_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)

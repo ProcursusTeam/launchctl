@@ -27,13 +27,11 @@
  */
 #include <inttypes.h>
 #include <stdio.h>
-
 #include <xpc/xpc.h>
-#include "xpc_private.h"
-
-#include "vproc_priv.h"
 
 #include "launchctl.h"
+#include "vproc_priv.h"
+#include "xpc_private.h"
 
 int
 managerpid_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
@@ -43,7 +41,7 @@ managerpid_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **app
 
 	err = vproc_swap_integer(NULL, VPROC_GSK_MGR_PID, 0, &pid);
 	if (err == NULL)
-		printf("%"PRId64"\n", pid);
+		printf("%" PRId64 "\n", pid);
 	else {
 		fprintf(stderr, "Could not get manager PID.\n");
 		return EWTF;
@@ -60,7 +58,7 @@ manageruid_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **app
 
 	err = vproc_swap_integer(NULL, VPROC_GSK_MGR_UID, 0, &uid);
 	if (err == NULL)
-		printf("%"PRId64"\n", uid);
+		printf("%" PRId64 "\n", uid);
 	else {
 		fprintf(stderr, "Could not get manager UID.\n");
 		return EWTF;

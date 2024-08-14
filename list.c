@@ -27,11 +27,10 @@
  */
 #include <inttypes.h>
 #include <stdio.h>
-
 #include <xpc/xpc.h>
-#include "xpc_private.h"
 
 #include "launchctl.h"
+#include "xpc_private.h"
 
 int
 list_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
@@ -56,20 +55,20 @@ list_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 		if (services == NULL)
 			return EBADRESP;
 		printf("PID\tStatus\tLabel\n");
-		(void)xpc_dictionary_apply(services, ^ bool (const char *key, xpc_object_t value) {
-				int64_t pid = xpc_dictionary_get_int64(value, "pid");
-				if (pid == 0)
-					printf("-\t");
-				else
-					printf("%"PRId64"\t", pid);
-				int64_t status = xpc_dictionary_get_int64(value, "status");
-				if (WIFSTOPPED(status))
-					printf("???\t%s\n", key);
-				else if (WIFEXITED(status))
-					printf("%d\t%s\n", WEXITSTATUS(status), key);
-				else if (WIFSIGNALED(status))
-					printf("-%d\t%s\n", WTERMSIG(status), key);
-				return true;
+		(void)xpc_dictionary_apply(services, ^bool(const char *key, xpc_object_t value) {
+		    int64_t pid = xpc_dictionary_get_int64(value, "pid");
+		    if (pid == 0)
+			    printf("-\t");
+		    else
+			    printf("%" PRId64 "\t", pid);
+		    int64_t status = xpc_dictionary_get_int64(value, "status");
+		    if (WIFSTOPPED(status))
+			    printf("???\t%s\n", key);
+		    else if (WIFEXITED(status))
+			    printf("%d\t%s\n", WEXITSTATUS(status), key);
+		    else if (WIFSIGNALED(status))
+			    printf("-%d\t%s\n", WTERMSIG(status), key);
+		    return true;
 		});
 	} else {
 		xpc_object_t service = xpc_dictionary_get_dictionary(reply, "service");

@@ -30,11 +30,10 @@
 #include <signal.h>
 #include <spawn.h>
 #include <stdio.h>
-
 #include <xpc/xpc.h>
-#include "xpc_private.h"
 
 #include "launchctl.h"
+#include "xpc_private.h"
 
 int
 examine_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
@@ -67,7 +66,8 @@ examine_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 		return 0;
 	}
 	for (uint64_t i = 2; argv[i] != NULL; i++) {
-		if (strcmp(argv[i], "@PID") != 0) continue;
+		if (strcmp(argv[i], "@PID") != 0)
+			continue;
 		argv[i] = candidate_pid_str;
 	}
 	pid_t examiner_pid = 0;

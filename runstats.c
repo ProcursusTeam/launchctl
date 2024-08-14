@@ -25,6 +25,8 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include <sys/resource.h>
+
 #include <errno.h>
 #include <getopt.h>
 #include <inttypes.h>
@@ -32,18 +34,16 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <sys/resource.h>
-
 #include <xpc/xpc.h>
-#include "xpc_private.h"
 
 #include "launchctl.h"
+#include "xpc_private.h"
 
 static void
 print_runstats(size_t index, xpc_object_t dict, void *ctx)
 {
 	size_t ru_len = 0;
-	const struct rusage* ru = (const struct rusage*)xpc_dictionary_get_data(dict, "rusage", &ru_len);
+	const struct rusage *ru = (const struct rusage *)xpc_dictionary_get_data(dict, "rusage", &ru_len);
 	if (ru_len != sizeof(struct rusage)) {
 		fprintf(stderr, "runstats ipc routine returned incorrectly sized struct rusage\n");
 		exit(1);

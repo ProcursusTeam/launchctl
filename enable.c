@@ -30,12 +30,10 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-
 #include <xpc/xpc.h>
 
-#include "xpc_private.h"
-
 #include "launchctl.h"
+#include "xpc_private.h"
 
 int
 enable_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
@@ -65,19 +63,20 @@ enable_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 	if (ret == ENODOMAIN)
 		return ret;
 	if (ret != 0) {
-		fprintf(stderr, "Could not %s service: %d: %s\n", enable ? "enable" : "disable", ret, xpc_strerror(ret));
+		fprintf(stderr, "Could not %s service: %d: %s\n", enable ? "enable" : "disable", ret,
+		    xpc_strerror(ret));
 	} else {
 		xpc_object_t errors = xpc_dictionary_get_value(reply, "errors");
 		if (errors != NULL && xpc_get_type(errors) == XPC_TYPE_DICTIONARY) {
 			(void)xpc_dictionary_apply(errors, ^bool(const char *key, xpc_object_t value) {
-					if (xpc_get_type(value) == XPC_TYPE_INT64) {
-						int64_t err = xpc_int64_get_value(value);
-						if (err == EEXIST || err == EALREADY)
-							fprintf(stderr, "%s: service already loaded\n", key);
-						else
-							fprintf(stderr, "%s: %s\n", key, xpc_strerror(err));
-					}
-					return true;
+			    if (xpc_get_type(value) == XPC_TYPE_INT64) {
+				    int64_t err = xpc_int64_get_value(value);
+				    if (err == EEXIST || err == EALREADY)
+					    fprintf(stderr, "%s: service already loaded\n", key);
+				    else
+					    fprintf(stderr, "%s: %s\n", key, xpc_strerror(err));
+			    }
+			    return true;
 			});
 			if (xpc_dictionary_get_count(errors) != 0)
 				ret = EMANY;

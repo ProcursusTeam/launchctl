@@ -28,19 +28,17 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-
 #include <xpc/xpc.h>
 
-#include "xpc_private.h"
-
 #include "launchctl.h"
+#include "xpc_private.h"
 
 int reboot3(uint64_t flags, ...);
 
 #define RB2_USERREBOOT (0x2000000000000000llu)
 #define RB2_OBLITERATE (0x4000000000000000llu)
 #define RB2_FULLREBOOT (0x8000000000000000llu)
-#define ITHINK_HALT    (0x8000000000000008llu)
+#define ITHINK_HALT (0x8000000000000008llu)
 
 int
 reboot_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)

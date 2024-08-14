@@ -30,11 +30,10 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-
 #include <xpc/xpc.h>
-#include "xpc_private.h"
 
 #include "launchctl.h"
+#include "xpc_private.h"
 
 int
 bootstrap_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
@@ -64,17 +63,17 @@ bootstrap_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **appl
 		xpc_dictionary_set_value(dict, "paths", paths);
 		if (__builtin_available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)) {
 			if (xpc_dictionary_get_uint64(dict, "type") == 1 && xpc_user_sessions_enabled() != 0) {
-				xpc_array_apply(paths, ^bool (size_t index, xpc_object_t val) {
-						xpc_object_t plist = launchctl_xpc_from_plist(xpc_string_get_string_ptr(val));
-						if (plist != NULL && xpc_get_type(plist) == XPC_TYPE_DICTIONARY) {
-							if (xpc_dictionary_get_value(plist, "LimitLoadToSessionType") != 0) {
-								xpc_release(plist);
-								return true;
-							}
-						}
-						xpc_dictionary_set_uint64(dict, "type", 2);
-						xpc_dictionary_set_uint64(dict, "handle", xpc_user_sessions_get_foreground_uid(0));
-						return false;
+				xpc_array_apply(paths, ^bool(size_t index, xpc_object_t val) {
+				    xpc_object_t plist = launchctl_xpc_from_plist(xpc_string_get_string_ptr(val));
+				    if (plist != NULL && xpc_get_type(plist) == XPC_TYPE_DICTIONARY) {
+					    if (xpc_dictionary_get_value(plist, "LimitLoadToSessionType") != 0) {
+						    xpc_release(plist);
+						    return true;
+					    }
+				    }
+				    xpc_dictionary_set_uint64(dict, "type", 2);
+				    xpc_dictionary_set_uint64(dict, "handle", xpc_user_sessions_get_foreground_uid(0));
+				    return false;
 				});
 			}
 		}
@@ -87,14 +86,14 @@ bootstrap_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **appl
 			if (errors == NULL || xpc_get_type(errors) != XPC_TYPE_DICTIONARY)
 				return 0;
 			(void)xpc_dictionary_apply(errors, ^bool(const char *key, xpc_object_t value) {
-					if (xpc_get_type(value) == XPC_TYPE_INT64) {
-						int64_t err = xpc_int64_get_value(value);
-						if (err == EEXIST || err == EALREADY)
-							fprintf(stderr, "%s: service already bootstrapped\n", key);
-						else
-							fprintf(stderr, "%s: %s\n", key, xpc_strerror(err));
-					}
-					return true;
+			    if (xpc_get_type(value) == XPC_TYPE_INT64) {
+				    int64_t err = xpc_int64_get_value(value);
+				    if (err == EEXIST || err == EALREADY)
+					    fprintf(stderr, "%s: service already bootstrapped\n", key);
+				    else
+					    fprintf(stderr, "%s: %s\n", key, xpc_strerror(err));
+			    }
+			    return true;
 			});
 			int64_t err;
 			if ((err = xpc_dictionary_get_int64(reply, "bootstrap-error")) == 0)
@@ -131,17 +130,17 @@ bootout_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 		xpc_dictionary_set_value(dict, "paths", paths);
 		if (__builtin_available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)) {
 			if (xpc_dictionary_get_uint64(dict, "type") == 1 && xpc_user_sessions_enabled() != 0) {
-				xpc_array_apply(paths, ^bool (size_t index, xpc_object_t val) {
-						xpc_object_t plist = launchctl_xpc_from_plist(xpc_string_get_string_ptr(val));
-						if (plist != NULL && xpc_get_type(plist) == XPC_TYPE_DICTIONARY) {
-							if (xpc_dictionary_get_value(plist, "LimitLoadToSessionType") != 0) {
-								xpc_release(plist);
-								return true;
-							}
-						}
-						xpc_dictionary_set_uint64(dict, "type", 2);
-						xpc_dictionary_set_uint64(dict, "handle", xpc_user_sessions_get_foreground_uid(0));
-						return false;
+				xpc_array_apply(paths, ^bool(size_t index, xpc_object_t val) {
+				    xpc_object_t plist = launchctl_xpc_from_plist(xpc_string_get_string_ptr(val));
+				    if (plist != NULL && xpc_get_type(plist) == XPC_TYPE_DICTIONARY) {
+					    if (xpc_dictionary_get_value(plist, "LimitLoadToSessionType") != 0) {
+						    xpc_release(plist);
+						    return true;
+					    }
+				    }
+				    xpc_dictionary_set_uint64(dict, "type", 2);
+				    xpc_dictionary_set_uint64(dict, "handle", xpc_user_sessions_get_foreground_uid(0));
+				    return false;
 				});
 			}
 		}
@@ -159,14 +158,14 @@ bootout_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 			if (errors == NULL || xpc_get_type(errors) != XPC_TYPE_DICTIONARY)
 				return 0;
 			(void)xpc_dictionary_apply(errors, ^bool(const char *key, xpc_object_t value) {
-					if (xpc_get_type(value) == XPC_TYPE_INT64) {
-						int64_t err = xpc_int64_get_value(value);
-						if (err == EEXIST || err == EALREADY)
-							fprintf(stderr, "%s: service already booted out\n", key);
-						else
-							fprintf(stderr, "%s: %s\n", key, xpc_strerror(err));
-					}
-					return true;
+			    if (xpc_get_type(value) == XPC_TYPE_INT64) {
+				    int64_t err = xpc_int64_get_value(value);
+				    if (err == EEXIST || err == EALREADY)
+					    fprintf(stderr, "%s: service already booted out\n", key);
+				    else
+					    fprintf(stderr, "%s: %s\n", key, xpc_strerror(err));
+			    }
+			    return true;
 			});
 			int64_t err;
 			if ((err = xpc_dictionary_get_int64(reply, "bootout-error")) == 0)
