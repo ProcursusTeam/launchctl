@@ -26,6 +26,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include <sys/types.h>
+
 #include <xpc/xpc.h>
 
 #define OS_ALLOC_ONCE_KEY_LIBXPC 1

@@ -25,11 +25,9 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include <mach/mach.h>
 #include <stdint.h>
 #include <stdio.h>
-
-#include <mach/mach.h>
-
 #include <xpc/xpc.h>
 
 #ifndef _LAUNCHCTL_H_
@@ -121,6 +119,9 @@ cmd_main dumpjpcategory_cmd;
 // procinfo.c
 cmd_main procinfo_cmd;
 cmd_main hostinfo_cmd;
+
+// resolveport.c
+cmd_main resolveport_cmd;
 
 void launchctl_xpc_object_print(xpc_object_t, const char *name, int level);
 int launchctl_send_xpc_to_launchd(uint64_t routine, xpc_object_t msg, xpc_object_t *reply);

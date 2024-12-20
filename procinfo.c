@@ -152,7 +152,7 @@ get_port_type(mach_port_t port)
 	launchctl_setup_xpc_dict_for_service_name("system", dict, NULL);
 	xpc_dictionary_set_int64(dict, "process", getpid());
 	xpc_dictionary_set_uint64(dict, "name", port);
-	int retval = launchctl_send_xpc_to_launchd(XPC_ROUTINE_PORT_INFO, dict, &reply);
+	int retval = launchctl_send_xpc_to_launchd(XPC_ROUTINE_RESOLVE_PORT, dict, &reply);
 	if (retval) {
 		type = "unknown";
 		goto port_type_end;
@@ -389,7 +389,7 @@ procinfo_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple
 	print_exception_port_info(1, masks, masksCnt, old_handlers);
 	printf("}\n");
 
-procinfo_proc_info: {
+procinfo_proc_info : {
 }
 	if (task)
 		mach_port_deallocate(mach_task_self(), task);
@@ -531,7 +531,7 @@ procinfo_proc_info: {
 	    procinfo.pbsd.pbi_svgid, procinfo.pbsd.pbi_rgid, procinfo.pbsd.pbi_comm, procinfo.pbsd.pbi_name,
 	    procinfo.pbsd.e_tdev, procinfo.pbsd.e_tpgid);
 
-procinfo_pressured_exit_info: {
+procinfo_pressured_exit_info : {
 }
 	free(procargs);
 	uint32_t dflags;
@@ -548,7 +548,7 @@ procinfo_pressured_exit_info: {
 	    !!(dflags & PROC_DIRTY_TRACKED), !!(dflags & PROC_DIRTY_IS_DIRTY),
 	    !!(dflags & PROC_DIRTY_ALLOWS_IDLE_EXIT));
 
-procinfo_entitlements: {
+procinfo_entitlements : {
 }
 	xpc_object_t xents = get_entitlements(pid, NULL);
 	if (!xents) {
@@ -559,7 +559,7 @@ procinfo_entitlements: {
 	launchctl_xpc_object_print(xents, NULL, 0);
 	xpc_release(xents);
 	printf("\n");
-procinfo_cs_info: {
+procinfo_cs_info : {
 }
 	uint32_t csflags;
 	retval = csops(pid, CS_OPS_STATUS, &csflags, sizeof(uint32_t));
@@ -604,7 +604,7 @@ procinfo_cs_info: {
 
 	printf("code signing info = %s\n", cs_info_str);
 
-procinfo_launchd_info: {
+procinfo_launchd_info : {
 }
 	printf("\n");
 	xpc_object_t dict, reply;

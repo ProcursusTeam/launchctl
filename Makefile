@@ -4,7 +4,7 @@ DESTDIR ?=
 SRC := attach.c blame.c bootstrap.c enable.c env.c error.c examine.c kickstart.c
 SRC += kill.c launchctl.c limit.c list.c load.c manager.c plist.c print.c reboot.c
 SRC += remove.c runstats.c start_stop.c userswitch.c version.c xpc_helper.c
-SRC += dumpjpcategory.c procinfo.c
+SRC += dumpjpcategory.c procinfo.c resolveport.c
 
 ifeq ($(DEBUG),1)
 CFLAGS  += -O0 -g -fsanitize=address,undefined -fno-omit-frame-pointer
