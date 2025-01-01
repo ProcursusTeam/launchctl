@@ -27,7 +27,6 @@
  */
 #include <stddef.h>
 #include <stdint.h>
-
 #include <xpc/xpc.h>
 
 #ifndef _LAUNCHCTL_XPC_PRIVATE_H_
@@ -51,7 +50,7 @@ enum {
 	XPC_ROUTINE_REMOVE = 816,
 	XPC_ROUTINE_SETENV = 819,
 	XPC_ROUTINE_GETENV = 820,
-	XPC_ROUTINE_PORT_INFO = 822,
+	XPC_ROUTINE_RESOLVE_PORT = 822,
 	XPC_ROUTINE_LIMIT = 825,
 	XPC_ROUTINE_EXAMINE = 826,
 	XPC_ROUTINE_PRINT = 828,
@@ -61,24 +60,20 @@ enum {
 
 XPC_DECL(xpc_pipe);
 
-XPC_EXPORT XPC_WARN_RESULT XPC_NONNULL1 XPC_NONNULL2 XPC_NONNULL3
-int
-xpc_pipe_routine(xpc_pipe_t pipe, xpc_object_t message,
-	xpc_object_t XPC_GIVES_REFERENCE *reply);
+XPC_EXPORT XPC_WARN_RESULT XPC_NONNULL1 XPC_NONNULL2 XPC_NONNULL3 int xpc_pipe_routine(xpc_pipe_t pipe,
+    xpc_object_t message, xpc_object_t XPC_GIVES_REFERENCE *reply);
 
-XPC_EXPORT XPC_WARN_RESULT XPC_NONNULL1 XPC_NONNULL3 XPC_NONNULL4
-int
-_xpc_pipe_interface_routine(xpc_pipe_t pipe, uint64_t routine,
-	xpc_object_t message, xpc_object_t XPC_GIVES_REFERENCE *reply,
-	uint64_t flags) __API_AVAILABLE(ios(15.0));
+XPC_EXPORT XPC_WARN_RESULT XPC_NONNULL1 XPC_NONNULL3 XPC_NONNULL4 int _xpc_pipe_interface_routine(xpc_pipe_t pipe,
+    uint64_t routine, xpc_object_t message, xpc_object_t XPC_GIVES_REFERENCE *reply, uint64_t flags)
+    __API_AVAILABLE(ios(15.0));
 
 int launch_active_user_switch(long, long) __API_AVAILABLE(ios(15.0));
 
 int64_t xpc_user_sessions_enabled(void) __API_AVAILABLE(ios(16.0));
 uint64_t xpc_user_sessions_get_foreground_uid(uint64_t) __API_AVAILABLE(ios(16.0));
 
-XPC_EXPORT XPC_RETURNS_RETAINED XPC_WARN_RESULT XPC_NONNULL1
-xpc_object_t xpc_create_from_plist(const void * data, size_t length);
+XPC_EXPORT XPC_RETURNS_RETAINED XPC_WARN_RESULT XPC_NONNULL1 xpc_object_t xpc_create_from_plist(const void *data,
+    size_t length);
 
 const char *xpc_strerror(int);
 
@@ -89,7 +84,7 @@ XPC_TYPE(_xpc_type_mach_send);
 typedef void (*xpc_dictionary_applier_f)(const char *key, xpc_object_t val, void *ctx);
 void xpc_dictionary_apply_f(xpc_object_t xdict, void *ctx, xpc_dictionary_applier_f applier);
 
-typedef void (*xpc_array_applier_f)(size_t index, xpc_object_t value, void* context);
+typedef void (*xpc_array_applier_f)(size_t index, xpc_object_t value, void *context);
 void xpc_array_apply_f(xpc_object_t xarray, void *context, xpc_array_applier_f applier);
 
 enum {
