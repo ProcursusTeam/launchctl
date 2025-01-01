@@ -568,7 +568,7 @@ procinfo_cs_info : {
 		goto procinfo_launchd_info;
 	}
 
-	char cs_info_str[1024];
+	char cs_info_str[1024] = { 0 };
 	if (csflags & CS_VALID) {
 		strlcat(cs_info_str, "valid", 1024);
 	} else {
