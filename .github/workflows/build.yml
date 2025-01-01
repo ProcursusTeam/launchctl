@@ -22,46 +22,58 @@ on:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        include:
+          - arch: arm64
+            sdk: iphoneos
+            target: "ios12.0"
+          - arch: arm64
+            sdk: appletvos
+            target: "tvos12.0"
+    runs-on: macos-15
     name: Build
-    runs-on: macos-12
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
       - name: Setup environment
         run: |
-          echo "CC=xcrun -sdk iphoneos cc -arch arm64" >> $GITHUB_ENV
-          echo "STRIP=xcrun -sdk iphoneos strip" >> $GITHUB_ENV
-          echo "CFLAGS=-I${HOME}/include -Os -flto=thin -Wextra -Wno-unused-parameter -miphoneos-version-min=12.0" >> $GITHUB_ENV
-          echo "LDFLAGS=-Os -flto=thin -miphoneos-version-min=12.0" >> $GITHUB_ENV
+          export MACOSX_SYSROOT="$(xcrun -sdk macosx --show-sdk-path)"
+          export TARGET_SYSROOT="$(xcrun -sdk ${{ matrix.sdk }} --show-sdk-path)"
+          echo "CC=$(xcrun --find cc)" >> $GITHUB_ENV
+          echo "CFLAGS=-g -Wextra -Wno-unused-parameter -flto=thin -Os -isystem ${TARGET_SYSROOT}/usr/include/c++/v1 -arch ${{ matrix.arch }} -mtargetos=${{ matrix.target }} -isysroot ${TARGET_SYSROOT} -isystem ${HOME}/include" >> $GITHUB_ENV
+          echo "STRIP=$(xcrun --find strip)" >> $GITHUB_ENV
+          echo "LDFLAGS=-Os -flto=thin -mtargetos=${{ matrix.target }} -isysroot ${TARGET_SYSROOT}" >> $GITHUB_ENV
           gh release download -R ProcursusTeam/ldid -p ldid_macosx_x86_64
           install -m755 ldid_macosx_x86_64 ldid
           echo "${PWD}" >> $GITHUB_PATH
-          mkdir -p ${HOME}/include/sys
-          ln -s $(xcrun -sdk macosx --show-sdk-path)/usr/include/xpc ${HOME}/include/xpc
-          ln -s $(xcrun -sdk macosx --show-sdk-path)/usr/include/launch.h ${HOME}/include/launch.h
-          ln -s $(xcrun -sdk macosx --show-sdk-path)/usr/include/net ${HOME}/include/net
-          ln -s $(xcrun -sdk macosx --show-sdk-path)/usr/include/libproc.h ${HOME}/include/libproc.h
-          ln -s $(xcrun -sdk macosx --show-sdk-path)/usr/include/sys/proc_info.h ${HOME}/include/sys/proc_info.h
-          ln -s $(xcrun -sdk macosx --show-sdk-path)/usr/include/sys/kern_control.h ${HOME}/include/sys/kern_control.h
+          mkdir -p ${HOME}/include/{sys,mach}
+          cp -af ${MACOSX_SYSROOT}/usr/include/{launch.h,libproc.h,xpc,net} ${HOME}/include
+          cp -af ${MACOSX_SYSROOT}/usr/include/sys/{proc_info,kern_control}.h ${HOME}/include/sys
+          sed -E s/'__IOS_PROHIBITED|__TVOS_PROHIBITED|__WATCHOS_PROHIBITED'//g < ${TARGET_SYSROOT}/usr/include/mach/task.h > ${HOME}/include/mach/task.h
+          sed -i -E s/'API_UNAVAILABLE\(.*\)'// ${HOME}/include/xpc/*.h
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build
-        run: make -j$(sysctl -n hw.ncpu)
+        run: |
+          make -j$(sysctl -n hw.ncpu)
+          mv launchctl launchctl_${{ matrix.sdk }}_${{ matrix.arch }}
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: launchctl
-          path: launchctl
+          name: launchctl_${{ matrix.sdk }}_${{ matrix.arch }}
+          path: launchctl_${{ matrix.sdk }}_${{ matrix.arch }}
 
       - name: Upload to release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         if: ${{ github.event_name == 'release' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: launchctl
+          files: launchctl_${{ matrix.sdk }}_${{ matrix.arch }}
