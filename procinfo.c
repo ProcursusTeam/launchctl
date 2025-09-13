@@ -443,7 +443,6 @@ procinfo_proc_info : {
 	assert(p < &procargs[argmax]);
 
 	// reached argv[0]
-	char *proc_argv = (char *)p;
 	printf("argument vector = {\n");
 	for (int32_t i = 0; i < proc_argc && p < &procargs[argmax]; i++) {
 		printf("\t[%d] = %s\n", i, p);
