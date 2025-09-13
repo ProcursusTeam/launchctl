@@ -613,14 +613,14 @@ procinfo_launchd_info : {
 	dict = xpc_dictionary_create(NULL, NULL, 0);
 	xpc_dictionary_set_int64(dict, "pid", pid);
 
-	if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)) {
+	if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, bridgeOS 6.0, *)) {
 		addr = launchctl_create_shmem(dict, sz);
 	} else {
 		xpc_dictionary_set_fd(dict, "fd", STDOUT_FILENO);
 	}
 	retval = launchctl_send_xpc_to_launchd(XPC_ROUTINE_PRINT_SERVICE, dict, &reply);
 	if (retval == 0) {
-		if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)) {
+		if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, bridgeOS 6.0, *)) {
 			launchctl_print_shmem(reply, addr, sz, stdout);
 			vm_deallocate(mach_task_self(), addr, sz);
 		}

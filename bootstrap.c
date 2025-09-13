@@ -61,7 +61,7 @@ bootstrap_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **appl
 	if (argc > 2) {
 		paths = launchctl_parse_load_unload(0, argc - 2, argv + 2);
 		xpc_dictionary_set_value(dict, "paths", paths);
-		if (__builtin_available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)) {
+		if (__builtin_available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, bridgeOS 7.0, *)) {
 			if (xpc_dictionary_get_uint64(dict, "type") == 1 && xpc_user_sessions_enabled() != 0) {
 				xpc_array_apply(paths, ^bool(size_t index, xpc_object_t val) {
 				    xpc_object_t plist = launchctl_xpc_from_plist(xpc_string_get_string_ptr(val));
@@ -128,7 +128,7 @@ bootout_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 	if (argc > 2 && name == NULL) {
 		paths = launchctl_parse_load_unload(0, argc - 2, argv + 2);
 		xpc_dictionary_set_value(dict, "paths", paths);
-		if (__builtin_available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)) {
+		if (__builtin_available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, bridgeOS 7.0, *)) {
 			if (xpc_dictionary_get_uint64(dict, "type") == 1 && xpc_user_sessions_enabled() != 0) {
 				xpc_array_apply(paths, ^bool(size_t index, xpc_object_t val) {
 				    xpc_object_t plist = launchctl_xpc_from_plist(xpc_string_get_string_ptr(val));
@@ -146,7 +146,7 @@ bootout_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 		}
 	}
 
-	if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)) {
+	if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, bridgeOS 6.0, *)) {
 		xpc_dictionary_set_bool(dict, "no-einprogress", true);
 	}
 

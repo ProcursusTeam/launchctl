@@ -41,7 +41,7 @@ userswitch_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **app
 
 	int ret = ENOTSUP;
 
-	if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)) {
+	if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, bridgeOS 6.0, *)) {
 		long olduid = 0, newuid = 0;
 
 		olduid = strtol(argv[1], NULL, 0);
