@@ -81,6 +81,8 @@ static const struct {
 	{ "dumpstate", "Dumps launchd state to stdout.", NULL, dumpstate_cmd },
 	{ "dumpjpcategory", "Dumps the jetsam properties category for all services.", NULL, dumpjpcategory_cmd },
 	{ "reboot", "Initiates a system reboot of the specified type.", "[system|halt|obliterate|userspace] [-s]", reboot_cmd },
+	{ "enter-rem", "Enter into Restricted Execution Mode (REM).", NULL, enter_rem_cmd },
+	{ "enter-rem-dev", "Enter into Restricted Execution Mode (REM) in development mode.", NULL, enter_rem_dev_cmd },
 	{ "userswitch", "Initiates a user switch.", "<old-uid> <new-uid>", userswitch_cmd },
 	{ "load", "Bootstraps a service or directory of services.", "<service-path, service-path2, ...>", load_cmd },
 	{ "unload", "Unloads a service or directory of services.", "<service-path, service-path2, ...>", load_cmd },

@@ -109,6 +109,8 @@ void xpc_dictionary_apply_f(xpc_object_t xdict, void *ctx, xpc_dictionary_applie
 typedef void (*xpc_array_applier_f)(size_t index, xpc_object_t value, void *context);
 void xpc_array_apply_f(xpc_object_t xarray, void *context, xpc_array_applier_f applier);
 
+int launch_userspace_reboot_with_purpose(int) __API_AVAILABLE(ios(18.0), tvos(18.0), watchos(11.0), bridgeos(9.0));
+
 enum {
 	ENODOMAIN = 112,
 	ENOSERVICE = 113,
