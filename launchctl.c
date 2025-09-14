@@ -79,6 +79,7 @@ static const struct {
 	{ "examine", "Runs the specified analysis tool against launchd in a non-reentrant manner.", "[<tool> [arg0, arg1, ... , @PID, ...]]", examine_cmd },
 	{ "config", "Modifies persistent configuration parameters for launchd domains.", NULL, config_cmd },
 	{ "dumpstate", "Dumps launchd state to stdout.", NULL, dumpstate_cmd },
+	{ "dump-xsc", "Dumps launchd XPC string caches to stdout.", "<name>", dump_xsc_cmd },
 	{ "dumpjpcategory", "Dumps the jetsam properties category for all services.", NULL, dumpjpcategory_cmd },
 	{ "reboot", "Initiates a system reboot of the specified type.", "[system|halt|obliterate|userspace] [-s]", reboot_cmd },
 	{ "enter-rem", "Enter into Restricted Execution Mode (REM).", NULL, enter_rem_cmd },
