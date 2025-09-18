@@ -60,6 +60,7 @@ cmd_main print_cmd;
 cmd_main print_cache_cmd;
 cmd_main print_disabled_cmd;
 cmd_main dumpstate_cmd;
+cmd_main dump_xsc_cmd;
 
 // env.c
 cmd_main setenv_cmd;
@@ -122,6 +123,10 @@ cmd_main hostinfo_cmd;
 
 // resolveport.c
 cmd_main resolveport_cmd;
+
+// rem.c
+cmd_main enter_rem_cmd;
+cmd_main enter_rem_dev_cmd;
 
 void launchctl_xpc_object_print(xpc_object_t, const char *name, int level);
 int launchctl_send_xpc_to_launchd(uint64_t routine, xpc_object_t msg, xpc_object_t *reply);

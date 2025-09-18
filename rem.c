@@ -1,7 +1,7 @@
 /*-
- * SPDX-License-Identifier: BSD 2-Clause License
+ * SPDX-License-Identifier: BSD-2-Clause
  *
- * Copyright (c) 2024 Procursus Team <team@procurs.us>
+ * Copyright (c) 2025 Procursus Team <team@procurs.us>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,44 +26,38 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include <errno.h>
-#include <inttypes.h>
-#include <signal.h>
-#include <spawn.h>
+#include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 #include <xpc/xpc.h>
 
 #include "launchctl.h"
 #include "xpc_private.h"
 
 int
-dumpjpcategory_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
+enter_rem_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 {
-	xpc_object_t dict, reply;
-	dict = xpc_dictionary_create(NULL, NULL, 0);
-	*msg = dict;
-	vm_address_t addr;
-	vm_size_t sz = 0x100000;
+	int ret = ENOTSUP;
 
-	launchctl_setup_xpc_dict_for_service_name("system", dict, NULL);
-	xpc_dictionary_set_fd(dict, "fd", STDOUT_FILENO);
+	if (__builtin_available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, bridgeOS 9.0, *))
+		ret = launch_userspace_reboot_with_purpose(4);
 
-	if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, bridgeOS 6.0, *)) {
-		addr = launchctl_create_shmem(dict, sz);
-	} else {
-		xpc_dictionary_set_fd(dict, "fd", STDOUT_FILENO);
-	}
+	if (ret != 0)
+		fprintf(stderr, "Failed to enter REM: %d: %s\n", ret, xpc_strerror(ret));
 
-	int retval = launchctl_send_xpc_to_launchd(XPC_ROUTINE_DUMPJPCATEGORY, dict, &reply);
+	return ret;
+}
 
-	if (retval == ENOTSUP) {
-		fprintf(stderr, "Dump jetsamproperties category is not supported on this platform.\n");
-	}
+int
+enter_rem_dev_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
+{
+	int ret = ENOTSUP;
 
-	if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, bridgeOS 6.0, *)) {
-		if (retval == 0)
-			launchctl_print_shmem(reply, addr, sz, stdout);
-		vm_deallocate(mach_task_self(), addr, sz);
-	}
+	if (__builtin_available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, bridgeOS 9.0, *))
+		ret = launch_userspace_reboot_with_purpose(5);
 
-	return retval;
+	if (ret != 0)
+		fprintf(stderr, "Failed to enter REM (development): %d: %s\n", ret, xpc_strerror(ret));
+
+	return ret;
 }

@@ -52,7 +52,7 @@ print_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 	if ((ret = launchctl_setup_xpc_dict_for_service_name(argv[1], dict, &name)) != 0)
 		return ret;
 
-	if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)) {
+	if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, bridgeOS 6.0, *)) {
 		addr = launchctl_create_shmem(dict, sz);
 	} else {
 		xpc_dictionary_set_fd(dict, "fd", STDOUT_FILENO);
@@ -64,7 +64,7 @@ print_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 		ret = launchctl_send_xpc_to_launchd(XPC_ROUTINE_PRINT, dict, &reply);
 
 	if (ret == 0) {
-		if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)) {
+		if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, bridgeOS 6.0, *)) {
 			launchctl_print_shmem(reply, addr, sz, stdout);
 			vm_deallocate(mach_task_self(), addr, sz);
 		}
@@ -92,7 +92,7 @@ print_cache_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **ap
 	xpc_dictionary_set_uint64(dict, "type", 1);
 	xpc_dictionary_set_uint64(dict, "handle", 0);
 
-	if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)) {
+	if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, bridgeOS 6.0, *)) {
 		addr = launchctl_create_shmem(dict, sz);
 	} else {
 		xpc_dictionary_set_fd(dict, "fd", STDOUT_FILENO);
@@ -102,7 +102,7 @@ print_cache_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **ap
 	ret = launchctl_send_xpc_to_launchd(XPC_ROUTINE_PRINT, dict, &reply);
 
 	if (ret == 0) {
-		if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)) {
+		if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, bridgeOS 6.0, *)) {
 			launchctl_print_shmem(reply, addr, sz, stdout);
 			vm_deallocate(mach_task_self(), addr, sz);
 		}
@@ -130,7 +130,7 @@ print_disabled_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char *
 	xpc_dictionary_set_uint64(dict, "type", 1);
 	xpc_dictionary_set_uint64(dict, "handle", 0);
 
-	if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)) {
+	if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, bridgeOS 6.0, *)) {
 		addr = launchctl_create_shmem(dict, sz);
 	} else {
 		xpc_dictionary_set_fd(dict, "fd", STDOUT_FILENO);
@@ -140,7 +140,7 @@ print_disabled_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char *
 	ret = launchctl_send_xpc_to_launchd(XPC_ROUTINE_PRINT, dict, &reply);
 
 	if (ret == 0) {
-		if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)) {
+		if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, bridgeOS 6.0, *)) {
 			launchctl_print_shmem(reply, addr, sz, stdout);
 			vm_deallocate(mach_task_self(), addr, sz);
 		}
@@ -168,7 +168,7 @@ dumpstate_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **appl
 	xpc_dictionary_set_uint64(dict, "type", 1);
 	xpc_dictionary_set_uint64(dict, "handle", 0);
 
-	if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)) {
+	if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, bridgeOS 6.0, *)) {
 		addr = launchctl_create_shmem(dict, sz);
 	} else {
 		xpc_dictionary_set_fd(dict, "fd", STDOUT_FILENO);
@@ -177,7 +177,7 @@ dumpstate_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **appl
 	ret = launchctl_send_xpc_to_launchd(XPC_ROUTINE_DUMPSTATE, dict, &reply);
 
 	if (ret == 0) {
-		if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)) {
+		if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, bridgeOS 6.0, *)) {
 			launchctl_print_shmem(reply, addr, sz, stdout);
 			vm_deallocate(mach_task_self(), addr, sz);
 		}
@@ -189,6 +189,38 @@ dumpstate_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **appl
 		fprintf(stderr, "State-dump is only available on the DEVELOPMENT variant.\n");
 	} else {
 		fprintf(stderr, "State-dump failed with error %d\n", ret);
+	}
+
+	return ret;
+}
+
+int
+dump_xsc_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
+{
+	int ret = ENOTSUP;
+	xpc_object_t reply;
+	vm_address_t addr;
+	vm_size_t sz = 0xa00000;
+
+	if (__builtin_available(macOS 16.0, iOS 19.0, tvOS 19.0, watchOS 12.0, bridgeOS 10.0, *)) {
+		xpc_object_t dict = xpc_dictionary_create(NULL, NULL, 0);
+		*msg = dict;
+
+		if ((ret = launchctl_setup_xpc_dict_for_service_name("system", dict, NULL)) != 0)
+			return ret;
+
+		if (argc > 1)
+			xpc_dictionary_set_string(dict, "name", argv[1]);
+
+		addr = launchctl_create_shmem(dict, sz);
+		ret = launchctl_send_xpc_to_launchd(XPC_ROUTINE_DUMP_XSC, dict, &reply);
+
+		if (ret)
+			fprintf(stderr, "State-dump failed with error %d\n", ret);
+		else
+			launchctl_print_shmem(reply, addr, sz, stdout);
+
+		vm_deallocate(mach_task_self(), addr, sz);
 	}
 
 	return ret;

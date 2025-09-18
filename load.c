@@ -98,7 +98,7 @@ load_cmd(xpc_object_t *msg, int argc, char **argv, char **envp, char **apple)
 		xpc_dictionary_set_bool(dict, "enable", wflag);
 	} else {
 		xpc_dictionary_set_bool(dict, "disable", wflag);
-		if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)) {
+		if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, bridgeOS 6.0, *)) {
 			xpc_dictionary_set_bool(dict, "no-einprogress", true);
 		}
 	}

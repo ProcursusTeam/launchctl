@@ -32,6 +32,26 @@
 #ifndef _LAUNCHCTL_XPC_PRIVATE_H_
 #define _LAUNCHCTL_XPC_PRIVATE_H_
 
+// clang-format off
+#if defined(__has_feature) && defined(__has_attribute)
+#if __has_attribute(availability)
+
+#ifndef __API_AVAILABLE_PLATFORM_bridgeos
+#define __API_AVAILABLE_PLATFORM_bridgeos(x) bridgeos,introduced=x
+#endif
+
+#ifndef __API_DEPRECATED_PLATFORM_bridgeos
+#define __API_DEPRECATED_PLATFORM_bridgeos(x,y) bridgeos,introduced=x,deprecated=y
+#endif
+
+#ifndef __API_UNAVAILABLE_PLATFORM_bridgeos
+#define __API_UNAVAILABLE_PLATFORM_bridgeos bridgeos,unavailable
+#endif
+
+#endif
+#endif
+// clang-format on
+
 enum {
 	XPC_ROUTINE_KICKSTART_SERVICE = 702,
 	XPC_ROUTINE_ATTACH_SERVICE = 703,
@@ -55,7 +75,8 @@ enum {
 	XPC_ROUTINE_EXAMINE = 826,
 	XPC_ROUTINE_PRINT = 828,
 	XPC_ROUTINE_DUMPSTATE = 834,
-	XPC_ROUTINE_DUMPJPCATEGORY = 837
+	XPC_ROUTINE_DUMPJPCATEGORY = 837,
+	XPC_ROUTINE_DUMP_XSC = 849,
 };
 
 XPC_DECL(xpc_pipe);
@@ -65,12 +86,14 @@ XPC_EXPORT XPC_WARN_RESULT XPC_NONNULL1 XPC_NONNULL2 XPC_NONNULL3 int xpc_pipe_r
 
 XPC_EXPORT XPC_WARN_RESULT XPC_NONNULL1 XPC_NONNULL3 XPC_NONNULL4 int _xpc_pipe_interface_routine(xpc_pipe_t pipe,
     uint64_t routine, xpc_object_t message, xpc_object_t XPC_GIVES_REFERENCE *reply, uint64_t flags)
-    __API_AVAILABLE(ios(15.0));
+    __API_AVAILABLE(ios(15.0), tvos(15.0), watchos(8.0), bridgeos(6.0));
 
-int launch_active_user_switch(long, long) __API_AVAILABLE(ios(15.0));
+int __attribute__((weak_import, weak)) launch_active_user_switch(long, long)
+    API_DEPRECATED("No longer exist", ios(15.0, 19.0), tvos(15.0, 19.0), watchos(8.0, 12.0), bridgeos(6.0, 10.0));
 
-int64_t xpc_user_sessions_enabled(void) __API_AVAILABLE(ios(16.0));
-uint64_t xpc_user_sessions_get_foreground_uid(uint64_t) __API_AVAILABLE(ios(16.0));
+int64_t xpc_user_sessions_enabled(void) __API_AVAILABLE(ios(16.0), tvos(16.0), watchos(9.0), bridgeos(7.0));
+uint64_t xpc_user_sessions_get_foreground_uid(uint64_t)
+    __API_AVAILABLE(ios(16.0), tvos(16.0), watchos(9.0), bridgeos(7.0));
 
 XPC_EXPORT XPC_RETURNS_RETAINED XPC_WARN_RESULT XPC_NONNULL1 xpc_object_t xpc_create_from_plist(const void *data,
     size_t length);
@@ -86,6 +109,8 @@ void xpc_dictionary_apply_f(xpc_object_t xdict, void *ctx, xpc_dictionary_applie
 
 typedef void (*xpc_array_applier_f)(size_t index, xpc_object_t value, void *context);
 void xpc_array_apply_f(xpc_object_t xarray, void *context, xpc_array_applier_f applier);
+
+int launch_userspace_reboot_with_purpose(int) __API_AVAILABLE(ios(18.0), tvos(18.0), watchos(11.0), bridgeos(9.0));
 
 enum {
 	ENODOMAIN = 112,
