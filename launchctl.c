@@ -44,7 +44,7 @@
 #include "launchctl.h"
 #include "xpc_private.h"
 
-__SCCSID("@(#)PROGRAM:launchctl  PROJECT:ProcursusTeam/launchctl  VERSION:1.1.1");
+__SCCSID("@(#)PROGRAM:launchctl  PROJECT:ProcursusTeam/launchctl  VERSION:1.2.0");
 
 char launchctl __attribute__((section("__TEXT,__launchctl"))) = 1;
 
